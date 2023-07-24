@@ -83,14 +83,7 @@ export default {
         instagram,
         linkedin,
     },
-    computed: {
-        user() {
-            return this.$store.state.user;
-        },
-        admin() {
-            return this.$store.state.profileAdmin;
-        },
-    },
+    computed: {},
 };
 </script>
 
