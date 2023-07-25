@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Blogs from "../views/Blogs.vue";
+import NewPost from "../views/NewPost.vue";
 
 Vue.use(VueRouter);
 
@@ -11,6 +12,14 @@ const routes = [
         component: Blogs,
         meta: {
             title: "Blogs",
+        },
+    },
+    {
+        path: "/new-post",
+        name: "NewPost",
+        component: NewPost,
+        meta: {
+            title: "New Post",
         },
     },
 ];

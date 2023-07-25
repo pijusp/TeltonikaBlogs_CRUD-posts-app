@@ -93,7 +93,7 @@ export default {
 footer {
     margin-top: auto;
     padding: 20px 20px;
-    background-color: #243add;
+    background-color: #35a7ff;
 
     .container {
         display: flex;
@@ -168,6 +168,9 @@ footer {
                             height: auto;
                             color: #fff;
                         }
+                        &:hover {
+                            transform: scale(1.1);
+                        }
                     }
                 }
             }
@@ -187,6 +190,9 @@ footer {
                         color: #fff;
                         text-decoration: none;
                         margin: 8px;
+                        &:hover {
+                            color: #03045e;
+                        }
                     }
                 }
             }

@@ -97,10 +97,9 @@ export default {
             background-color: #fff;
             transition: 0.5s ease all;
 
-            /* transform: scale(0.2); */
-
             &:hover {
-                background-color: #ffff82;
+                background-color: #82ff9e;
+                transform: scale(1.15);
             }
 
             &:nth-child(1) {
