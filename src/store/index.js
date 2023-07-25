@@ -25,7 +25,7 @@ export default new Vuex.Store({
         editPost: null,
         blogHTML: "Write you blog title here...",
         blogTitle: "",
-        selectedAuthor: null,
+        authorName: null,
     },
     mutations: {
         newBlogPost(state, payload) {
@@ -35,7 +35,7 @@ export default new Vuex.Store({
             state.blogTitle = payload;
         },
         updateBlogAuthor(state, payload) {
-            state.selectedAuthor = payload;
+            state.authorName = payload;
         },
         toggleEditPost(state, payload) {
             state.editPost = payload;

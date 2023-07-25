@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Blogs from "../views/Blogs.vue";
 import NewPost from "../views/NewPost.vue";
+import PostPreview from "../views/PostPreview.vue";
 
 Vue.use(VueRouter);
 
@@ -20,6 +21,14 @@ const routes = [
         component: NewPost,
         meta: {
             title: "New Post",
+        },
+    },
+    {
+        path: "/post-preview",
+        name: "PostPreview",
+        component: PostPreview,
+        meta: {
+            title: "Post Preview",
         },
     },
 ];

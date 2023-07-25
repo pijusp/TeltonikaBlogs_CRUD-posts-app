@@ -10,7 +10,7 @@
                     placeholder="Enter blog title"
                     v-model="blogTitle"
                 />
-                <select v-model="selectedAuthor" class="select-menu">
+                <select v-model="authorName" class="select-menu">
                     <option :value="null">Select an author</option>
                     <option
                         v-for="author in authors"
@@ -30,7 +30,7 @@
                 </button>
                 <router-link
                     class="router-button custom-button"
-                    :to="{ name: 'BlogPreview' }"
+                    :to="{ name: 'PostPreview' }"
                     >Post Preview</router-link
                 >
             </div>
@@ -59,7 +59,7 @@ export default {
     methods: {
         uploadBlog() {
             // Check if an author is selected
-            if (this.selectedAuthor === null) {
+            if (this.authorName === null) {
                 this.errorMsg = "Please select an author for the blog.";
                 this.error = true;
                 return;
@@ -83,12 +83,12 @@ export default {
                 this.$store.commit("newBlogPost", payload);
             },
         },
-        selectedAuthor: {
+        authorName: {
             get() {
-                return this.$store.state.selectedAuthor;
+                return this.$store.state.authorName;
             },
             set(payload) {
-                this.$store.commit("updateSelectedAuthor", payload);
+                this.$store.commit("updateBlogAuthor", payload);
             },
         },
     },
