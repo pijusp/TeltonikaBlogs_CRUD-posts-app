@@ -10,12 +10,12 @@
                     placeholder="Enter blog title"
                     v-model="blogTitle"
                 />
-                <select v-model="authorName" class="select-menu">
+                <select v-model="selectedAuthor" class="select-menu">
                     <option :value="null">Select an author</option>
                     <option
                         v-for="author in authors"
                         :key="author.id"
-                        :value="author.id"
+                        :value="author.name"
                     >
                         {{ author.name }}
                     </option>
@@ -30,7 +30,10 @@
                 </button>
                 <router-link
                     class="router-button custom-button"
-                    :to="{ name: 'PostPreview' }"
+                    :to="{
+                        name: 'PostPreview',
+                        params: { selectedAuthor: selectedAuthor },
+                    }"
                     >Post Preview</router-link
                 >
             </div>
@@ -83,12 +86,12 @@ export default {
                 this.$store.commit("newBlogPost", payload);
             },
         },
-        authorName: {
+        selectedAuthor: {
             get() {
-                return this.$store.state.authorName;
+                return this.$store.state.selectedAuthor;
             },
             set(payload) {
-                this.$store.commit("updateBlogAuthor", payload);
+                this.$store.commit("updatePostAuthor", payload);
             },
         },
     },

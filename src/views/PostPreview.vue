@@ -3,9 +3,12 @@
         <div class="container quillWrapper">
             <h2>{{ this.blogTitle }}</h2>
             <div class="post-meta">
-                <span class="post-author">By {{ this.selectedAuthor }}</span>
+                <span class="post-author"
+                    >By {{ this.$route.params.selectedAuthor }}</span
+                >
             </div>
             <div class="post-content ql-editor" v-html="blogHTML"></div>
+            <button class="custom-button" @click="goBack">Go Back</button>
         </div>
     </div>
 </template>
@@ -20,8 +23,10 @@ export default {
         blogHTML() {
             return this.$store.state.blogHTML;
         },
-        selectedAuthor() {
-            return this.$store.state.selectedAuthor;
+    },
+    methods: {
+        goBack() {
+            this.$router.go(-1);
         },
     },
 };
