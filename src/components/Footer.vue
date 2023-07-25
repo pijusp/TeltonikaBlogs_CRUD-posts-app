@@ -8,7 +8,7 @@
                     >
                     <ul>
                         <li>
-                            <a href="https://www.youtube.com">
+                            <a href="https://www.youtube.com/TeltonikaNetworks">
                                 <img
                                     src="../assets/Icons/youtube-brands.svg"
                                     class="svg-icon"
@@ -17,7 +17,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.twitter.com"
+                            <a href="https://www.twitter.com/TeltonikaNET"
                                 ><img
                                     :src="twitter"
                                     class="svg-icon"
@@ -25,7 +25,8 @@
                             /></a>
                         </li>
                         <li>
-                            <a href="https://www.instagram.com"
+                            <a
+                                href="https://www.instagram.com/teltonikanetworksofficial/"
                                 ><img
                                     :src="instagram"
                                     class="svg-icon"
@@ -33,7 +34,8 @@
                             /></a>
                         </li>
                         <li>
-                            <a href="https://www.linkedin.com"
+                            <a
+                                href="https://www.linkedin.com/company/teltonika-networks/"
                                 ><img
                                     :src="linkedin"
                                     class="svg-icon"
@@ -91,7 +93,7 @@ export default {
 footer {
     margin-top: auto;
     padding: 20px 20px;
-    background-color: #93867f;
+    background-color: #243add;
 
     .container {
         display: flex;

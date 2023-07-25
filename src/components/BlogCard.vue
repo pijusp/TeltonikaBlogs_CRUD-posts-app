@@ -100,7 +100,7 @@ export default {
             /* transform: scale(0.2); */
 
             &:hover {
-                background-color: #93867f;
+                background-color: #ffff82;
             }
 
             &:nth-child(1) {
