@@ -29,16 +29,14 @@
 </template>
 
 <script>
-import Arrow from "../assets/Icons/arrow-right-light.svg";
 import Edit from "../assets/Icons/edit-regular.svg";
 import Delete from "../assets/Icons/trash-regular.svg";
 export default {
     name: "blogCard",
     props: ["post"],
-    components: { Arrow, Edit, Delete },
+    components: { Edit, Delete },
     data() {
         return {
-            Arrow,
             Edit,
             Delete,
         };
@@ -85,6 +83,9 @@ export default {
         top: 10px;
         right: 10px;
         z-index: 99;
+        img {
+            transform: scale(0.09);
+        }
 
         .icon {
             display: flex;
@@ -96,15 +97,10 @@ export default {
             background-color: #fff;
             transition: 0.5s ease all;
 
-            &:hover {
-                background-color: #303030;
+            /* transform: scale(0.2); */
 
-                .edit,
-                .delete {
-                    path {
-                        fill: #fff;
-                    }
-                }
+            &:hover {
+                background-color: #93867f;
             }
 
             &:nth-child(1) {

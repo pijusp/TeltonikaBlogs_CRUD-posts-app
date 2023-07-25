@@ -10,10 +10,10 @@
                         <li>
                             <a href="https://www.youtube.com">
                                 <img
-                                    :src="youTube"
+                                    src="../assets/Icons/youtube-brands.svg"
                                     class="svg-icon"
                                     alt="YouTube"
-                                />
+                                /><img />
                             </a>
                         </li>
                         <li>
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import youTube from "../assets/Icons/youtube-brands.svg";
+import youTube from "../assets/Icons/youtube-brands.svg?inline";
 import twitter from "../assets/Icons/twitter-brands.svg";
 import instagram from "../assets/Icons/instagram-brands.svg";
 import linkedin from "../assets/Icons/linkedin-brands.svg";

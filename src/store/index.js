@@ -22,8 +22,13 @@ export default new Vuex.Store({
                 created_at: "2023-05-23",
             },
         ],
+        editPost: null,
     },
-    mutations: {},
+    mutations: {
+        toggleEditPost(state, payload) {
+            state.editPost = payload;
+        },
+    },
     actions: {},
     modules: {},
 });
