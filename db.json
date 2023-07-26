@@ -111,6 +111,22 @@
       "authorId": 2,
       "created_at": "2023-05-31",
       "updated_at": "2023-05-31"
+    },
+    {
+      "title": "Testas1",
+      "body": "<p>Oliveris raso teksta</p>",
+      "authorId": 1,
+      "created_at": "2023-07-26",
+      "updated_at": "2023-07-26",
+      "id": 11
+    },
+    {
+      "title": "Evelinos bandymas rasyti posta",
+      "body": "<p>Laba diena</p>",
+      "authorId": 2,
+      "created_at": "2023-07-26",
+      "updated_at": "2023-07-26",
+      "id": 12
     }
   ]
 }

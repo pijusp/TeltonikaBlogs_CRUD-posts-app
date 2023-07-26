@@ -43,6 +43,8 @@
 
 <script>
 import Quill from "quill";
+import axios from "axios";
+import router from "../router";
 window.Quill = Quill;
 export default {
     name: "NewPost",
@@ -60,12 +62,51 @@ export default {
         };
     },
     methods: {
-        uploadBlog() {
+        async uploadBlog() {
             // Check if an author is selected
-            if (this.authorName === null) {
+            if (this.selectedAuthor === null) {
                 this.errorMsg = "Please select an author for the blog.";
                 this.error = true;
                 return;
+            }
+            // Get the current date and time
+            const currentDate = new Date();
+
+            // Format the date to yyyy-mm-dd format
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+            const day = String(currentDate.getDate()).padStart(2, "0");
+
+            // Find the author's ID based on their name
+            const selectedAuthorObject = this.authors.find(
+                (author) => author.name === this.selectedAuthor
+            );
+
+            // Prepare the data to be sent to the server
+            const newBlogPost = {
+                title: this.blogTitle,
+                body: this.blogHTML,
+                authorId: selectedAuthorObject ? selectedAuthorObject.id : null,
+                created_at: `${year}-${month}-${day}`,
+                updated_at: `${year}-${month}-${day}`,
+            };
+
+            try {
+                // Send the POST request to the server
+                const response = await axios.post(
+                    "http://localhost:3000/posts",
+                    newBlogPost
+                );
+
+                // Optionally, you can handle the response here (e.g., show a success message).
+                console.log("Blog post uploaded successfully:", response.data);
+                router.push({ name: "Blogs" });
+            } catch (error) {
+                // Handle any errors that occur during the request
+                console.error("Error uploading blog post:", error);
+                this.errorMsg =
+                    "Error uploading blog post. Please try again later.";
+                this.error = true;
             }
         },
     },
