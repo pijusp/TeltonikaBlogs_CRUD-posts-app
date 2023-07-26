@@ -10,6 +10,7 @@
         </div>
         <div class="info">
             <h4>{{ post.title }}</h4>
+            <h6>Written by: {{ getAuthorName(post.authorId) }}</h6>
             <h6>
                 Posted on:
                 {{
@@ -51,6 +52,10 @@ export default {
                 params: { blogid: this.post.blogID },
             });
         },
+        getAuthorName(authorId) {
+            const author = this.$store.getters.getAuthorById(authorId);
+            return author ? author.name : "Unknown Author";
+        },
     },
     computed: {
         editPost() {
@@ -83,10 +88,6 @@ export default {
         top: 10px;
         right: 10px;
         z-index: 99;
-        img {
-            transform: scale(0.09);
-        }
-
         .icon {
             display: flex;
             justify-content: center;
@@ -116,12 +117,9 @@ export default {
     }
 
     img {
-        display: block;
-        border-radius: 8px 8px 0 0;
         z-index: 1;
-        width: 100%;
-        min-height: 200px;
         object-fit: cover;
+        transform: scale(1.2);
     }
 
     .info {

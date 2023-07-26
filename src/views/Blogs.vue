@@ -7,7 +7,7 @@
             </div>
             <BlogCard
                 :post="post"
-                v-for="(post, index) in sampleBlogCards"
+                v-for="(post, index) in posts"
                 :key="index"
             />
         </div>
@@ -26,6 +26,9 @@ export default {
         sampleBlogCards() {
             return this.$store.state.sampleBlogCards;
         },
+        posts() {
+            return this.$store.getters.posts;
+        },
         editPost: {
             get() {
                 return this.$store.state.editPost;
@@ -34,6 +37,9 @@ export default {
                 this.$store.commit("toggleEditPost", payload);
             },
         },
+    },
+    created() {
+        this.$store.dispatch("loadPosts");
     },
 };
 </script>
