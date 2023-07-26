@@ -133,7 +133,7 @@ export default {
                     position: "top-right",
                     timeout: 3000,
                 });
-                router.push({ name: "Blogs" });
+                router.push({ name: "ViewBlog" });
 
                 this.blogTitle = "";
                 this.selectedAuthor = null;
