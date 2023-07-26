@@ -1,9 +1,9 @@
 <template>
     <div class="new-post">
         <div class="container">
-            <div :class="{ invisible: !error }" class="errorMsg">
+            <!-- <div :class="{ invisible: !error }" class="errorMsg">
                 <p><span>Error:</span>{{ this.errorMsg }}</p>
-            </div>
+            </div> -->
             <div class="blog-info">
                 <input
                     type="text"
@@ -45,6 +45,7 @@
 import Quill from "quill";
 import axios from "axios";
 import router from "../router";
+
 window.Quill = Quill;
 export default {
     name: "NewPost",
@@ -65,8 +66,37 @@ export default {
         async uploadBlog() {
             // Check if an author is selected
             if (this.selectedAuthor === null) {
-                this.errorMsg = "Please select an author for the blog.";
-                this.error = true;
+                this.$toast.warning("Please add an author!", {
+                    position: "top-right",
+                    timeout: 2952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
+                return;
+            }
+            if (this.blogTitle.length == 0 || this.blogHTML.length == 0) {
+                this.$toast.warning("Please fill out the post!", {
+                    position: "top-right",
+                    timeout: 2952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
                 return;
             }
             // Get the current date and time
@@ -98,15 +128,33 @@ export default {
                     newBlogPost
                 );
 
-                // Optionally, you can handle the response here (e.g., show a success message).
                 console.log("Blog post uploaded successfully:", response.data);
+                this.$toast.success("Blog post uploaded successfully!", {
+                    position: "top-right",
+                    timeout: 3000,
+                });
                 router.push({ name: "Blogs" });
+
+                this.blogTitle = "";
+                this.selectedAuthor = null;
+                this.blogHTML = "";
             } catch (error) {
                 // Handle any errors that occur during the request
                 console.error("Error uploading blog post:", error);
-                this.errorMsg =
-                    "Error uploading blog post. Please try again later.";
-                this.error = true;
+                this.$toast.warning("Error uploading the post!", {
+                    position: "top-right",
+                    timeout: 4952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
             }
         },
     },
@@ -182,13 +230,13 @@ export default {
         opacity: 0 !important;
     }
 
-    .err-message {
+    /* .errorMsg {
         width: 100%;
         padding: 12px;
         border-radius: 8px;
         color: #fff;
         margin-bottom: 10px;
-        background-color: #ad9baa;
+        background-color: #ae2519;
         opacity: 1;
         transition: 0.5s ease all;
 
@@ -199,7 +247,7 @@ export default {
         span {
             font-weight: 600;
         }
-    }
+    } */
 
     .blog-info {
         display: flex;
