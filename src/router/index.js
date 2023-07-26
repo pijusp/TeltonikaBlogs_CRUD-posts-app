@@ -31,6 +31,14 @@ const routes = [
             title: "Post Preview",
         },
     },
+    {
+        path: "*",
+        name: "NotFound",
+        component: () => import("../views/NotFound.vue"),
+        meta: {
+            title: "404 - Page Not Found",
+        },
+    },
 ];
 
 const router = new VueRouter({
@@ -40,7 +48,8 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    document.title = `${to.meta.title} | Teltonika Blogs`;
+    const title = to.meta.title || "Teltonika Blogs";
+    document.title = title;
     next();
 });
 
