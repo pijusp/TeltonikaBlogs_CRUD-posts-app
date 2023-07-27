@@ -1,41 +1,20 @@
 <template>
     <div class="new-post">
         <div class="container">
-            <!-- <div :class="{ invisible: !error }" class="errorMsg">
-                <p><span>Error:</span>{{ this.errorMsg }}</p>
-            </div> -->
             <div class="blog-info">
                 <input
                     type="text"
                     placeholder="Enter blog title"
                     v-model="blogTitle"
                 />
-                <select v-model="selectedAuthor" class="select-menu">
-                    <option :value="null">Select an author</option>
-                    <option
-                        v-for="author in authors"
-                        :key="author.id"
-                        :value="author.name"
-                    >
-                        {{ author.name }}
-                    </option>
-                </select>
             </div>
             <div class="editor">
                 <vue-editor v-model="blogHTML" />
             </div>
             <div class="blog-actions">
                 <button @click="uploadBlog" class="custom-button">
-                    Publish Blog
+                    Update Post
                 </button>
-                <router-link
-                    class="router-button custom-button"
-                    :to="{
-                        name: 'PostPreview',
-                        params: { selectedAuthor: selectedAuthor },
-                    }"
-                    >Post Preview</router-link
-                >
             </div>
         </div>
     </div>
@@ -48,40 +27,23 @@ import router from "../router";
 
 window.Quill = Quill;
 export default {
-    name: "NewPost",
+    name: "EditPost",
     data() {
         return {
-            error: null,
-            errorMsg: null,
-            authors: [
-                { id: 1, name: "Oliver" },
-                { id: 2, name: "Evelyn" },
-                { id: 3, name: "Leo" },
-                { id: 4, name: "Luna" },
-                { id: 5, name: "Max" },
-            ],
+            routeID: null,
+            currentPost: null,
         };
+    },
+    async mounted() {
+        this.routeID = this.$route.params.id;
+        this.currentPost = await this.$store.state.posts.filter((post) => {
+            return post.id === this.routeID;
+        });
+        this.$store.commit("setPostState", this.currentPost[0]);
     },
     methods: {
         async uploadBlog() {
             // Check if an author is selected
-            if (this.selectedAuthor === null) {
-                this.$toast.warning("Please add an author!", {
-                    position: "top-right",
-                    timeout: 2952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
-                });
-                return;
-            }
             if (this.blogTitle.length == 0 || this.blogHTML.length == 0) {
                 this.$toast.warning("Please fill out the post!", {
                     position: "top-right",
@@ -106,11 +68,6 @@ export default {
             const year = currentDate.getFullYear();
             const month = String(currentDate.getMonth() + 1).padStart(2, "0");
             const day = String(currentDate.getDate()).padStart(2, "0");
-
-            // Find the author's ID based on their name
-            const selectedAuthorObject = this.authors.find(
-                (author) => author.name === this.selectedAuthor
-            );
 
             // Prepare the data to be sent to the server
             const newBlogPost = {
@@ -173,14 +130,6 @@ export default {
             },
             set(payload) {
                 this.$store.commit("newBlogPost", payload);
-            },
-        },
-        selectedAuthor: {
-            get() {
-                return this.$store.state.selectedAuthor;
-            },
-            set(payload) {
-                this.$store.commit("updatePostAuthor", payload);
             },
         },
     },

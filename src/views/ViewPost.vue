@@ -59,13 +59,43 @@ export default {
         // [Vue warn]: Error in nextTick: "TypeError: Cannot read properties of undefined (reading '_wrapper')"
         // Missing button methods edit and delete
         deletePost() {
-            this.$store.dispatch("deletePost", this.post.id);
+            try {
+                const postId = this.currentPost[0].id;
+                this.$store.dispatch("deletePost", postId);
+                this.$toast.success("Blog post deleted successfully!", {
+                    position: "top-right",
+                    timeout: 3000,
+                });
+                router.push({ name: "Blogs" });
+            } catch (error) {
+                // Handle any errors that occur during the request
+                console.error("Error deleting blog post:", error);
+                this.$toast.warning("Error deleting the post!", {
+                    position: "top-right",
+                    timeout: 4952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
+            }
         },
-        editBlog() {
+        editPost() {
             this.$router.push({
-                name: "EditBlog",
-                params: { id: this.post.id },
+                name: "EditPost",
+                params: { id: this.currentPost[0].id },
             });
+        },
+    },
+    computed: {
+        editPost() {
+            return this.$store.state.editPost; // You can add this computed property to resolve the error
         },
     },
 };

@@ -1,9 +1,6 @@
 <template>
     <div class="new-post">
         <div class="container">
-            <!-- <div :class="{ invisible: !error }" class="errorMsg">
-                <p><span>Error:</span>{{ this.errorMsg }}</p>
-            </div> -->
             <div class="blog-info">
                 <input
                     type="text"
@@ -51,8 +48,6 @@ export default {
     name: "NewPost",
     data() {
         return {
-            error: null,
-            errorMsg: null,
             authors: [
                 { id: 1, name: "Oliver" },
                 { id: 2, name: "Evelyn" },

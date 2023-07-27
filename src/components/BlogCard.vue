@@ -71,7 +71,7 @@ export default {
         },
         editBlog() {
             this.$router.push({
-                name: "EditBlog",
+                name: "EditPost",
                 params: { id: this.post.id },
             });
         },

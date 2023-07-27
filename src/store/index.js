@@ -48,6 +48,10 @@ export default new Vuex.Store({
                 state.posts.splice(index, 1);
             }
         },
+        setPostState(state, payload) {
+            state.blogTitle = payload.title;
+            state.blogHTML = payload.body;
+        },
     },
     actions: {
         async loadPosts({ commit, state }) {
