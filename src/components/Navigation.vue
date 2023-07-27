@@ -66,7 +66,7 @@ export default {
     methods: {
         checkScreen() {
             this.windowWidth = window.innerWidth;
-            if (this.windowWidth <= 800) {
+            if (this.windowWidth <= 768) {
                 this.mobile = true;
                 return;
             }
@@ -164,8 +164,26 @@ nav {
             &::placeholder {
                 color: #aaa;
             }
-            @media only screen and (max-width: 768px) {
+            @media only screen and (max-width: 992px) {
                 width: 140px;
+                &:focus {
+                    outline: none;
+                    width: 170px; /* Expand the input field when focused */
+                }
+            }
+            @media only screen and (max-width: 768px) {
+                width: 200px;
+                &:focus {
+                    outline: none;
+                    width: 250px; /* Expand the input field when focused */
+                }
+            }
+            @media only screen and (max-width: 576px) {
+                width: 125px;
+                &:focus {
+                    outline: none;
+                    width: 160px; /* Expand the input field when focused */
+                }
             }
         }
     }
