@@ -1,5 +1,5 @@
 <template>
-    <div class="app-wrapper">
+    <div class="app-wrapper" v-if="this.$store.state.postLoaded">
         <div class="app">
             <Navigation />
             <router-view />
@@ -17,7 +17,9 @@ export default {
     data() {
         return {};
     },
-    created() {},
+    created() {
+        this.$store.dispatch("loadPosts");
+    },
     mounted() {},
     methods: {},
     watch: {},

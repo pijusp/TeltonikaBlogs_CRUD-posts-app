@@ -7,6 +7,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         editPost: null,
+        postLoaded: null,
         blogHTML: "Write your blog title here...",
         blogTitle: "",
         selectedAuthor: null,
@@ -43,7 +44,7 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        async loadPosts({ commit }) {
+        async loadPosts({ commit, state }) {
             try {
                 const response = await axios.get("http://localhost:3000/posts");
                 const posts = response.data;
@@ -68,6 +69,7 @@ export default new Vuex.Store({
                 // Update the Vuex state with the loaded posts and authors
                 commit("getPosts", posts);
                 commit("getAuthors", authors);
+                state.postLoaded = true;
             } catch (error) {
                 console.log(error);
             }
