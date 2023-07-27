@@ -13,6 +13,7 @@
                         @input="handleSearch"
                         type="text"
                         placeholder="Search posts..."
+                        class="search-input"
                     />
                 </div>
                 <ul v-show="!mobile">
@@ -25,7 +26,22 @@
                 </ul>
             </div>
         </nav>
-        <!-- ... (rest of the template code) ... -->
+        <img
+            :src="MenuIcon"
+            class="menu-icon"
+            @click="toggleMobileNav"
+            v-show="mobile"
+        />
+        <transition name="mobile-nav">
+            <ul class="mobile-nav" v-show="mobileNav">
+                <router-link class="link" :to="{ name: 'Blogs' }"
+                    >Blogs</router-link
+                >
+                <router-link class="link" :to="{ name: 'NewPost' }"
+                    >Create a new post</router-link
+                >
+            </ul>
+        </transition>
     </header>
 </template>
 
@@ -50,7 +66,7 @@ export default {
     methods: {
         checkScreen() {
             this.windowWidth = window.innerWidth;
-            if (this.windowWidth <= 750) {
+            if (this.windowWidth <= 800) {
                 this.mobile = true;
                 return;
             }
@@ -101,6 +117,9 @@ nav {
             font-size: 24px;
             color: beige;
             text-decoration: none;
+            @media only screen and (max-width: 768px) {
+                font-size: 16px;
+            }
         }
     }
 
@@ -123,6 +142,33 @@ nav {
             }
         }
     }
+    .search-bar {
+        position: relative;
+        padding-right: 32px;
+
+        .search-input {
+            width: 200px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: none;
+            background-color: #fff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: width 0.3s ease;
+
+            &:focus {
+                outline: none;
+                width: 250px; /* Expand the input field when focused */
+            }
+
+            &::placeholder {
+                color: #aaa;
+            }
+            @media only screen and (max-width: 768px) {
+                width: 140px;
+            }
+        }
+    }
     .mobile-user-menu {
         margin-right: 40px;
     }
@@ -131,7 +177,7 @@ nav {
 .menu-icon {
     cursor: pointer;
     position: absolute;
-    top: 32px;
+    top: 27px;
     right: 25px;
     height: 25px;
     width: auto;
