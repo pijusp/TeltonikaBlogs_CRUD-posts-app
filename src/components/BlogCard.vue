@@ -44,7 +44,30 @@ export default {
     },
     methods: {
         deletePost() {
-            this.$store.dispatch("deletePost", this.post.id);
+            try {
+                this.$store.dispatch("deletePost", this.post.id);
+                this.$toast.success("Blog post deleted successfully!", {
+                    position: "top-right",
+                    timeout: 3000,
+                });
+            } catch (error) {
+                // Handle any errors that occur during the request
+                console.error("Error deleting blog post:", error);
+                this.$toast.warning("Error deleting the post!", {
+                    position: "top-right",
+                    timeout: 4952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
+            }
         },
         editBlog() {
             this.$router.push({
