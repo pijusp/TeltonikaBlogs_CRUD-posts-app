@@ -137,12 +137,20 @@
       "id": 13
     },
     {
-      "title": "aaaaa",
-      "body": "<p>Write your aaaasasasas</p>",
+      "title": "asd",
+      "body": "<p>Write your blog title here...ads</p>",
       "authorId": 4,
-      "created_at": "2023-07-26",
-      "updated_at": "2023-07-26",
+      "created_at": "2023-07-27",
+      "updated_at": "2023-07-27",
       "id": 14
+    },
+    {
+      "title": "asd",
+      "body": "<p>Write your blog title here...ads</p>",
+      "authorId": 4,
+      "created_at": "2023-07-27",
+      "updated_at": "2023-07-27",
+      "id": 15
     }
   ]
 }

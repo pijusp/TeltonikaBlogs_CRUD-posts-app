@@ -42,6 +42,12 @@ export default new Vuex.Store({
         getAuthors(state, authors) {
             state.authors = authors;
         },
+        deletePost(state, postId) {
+            const index = state.posts.findIndex((post) => post.id === postId);
+            if (index !== -1) {
+                state.posts.splice(index, 1);
+            }
+        },
     },
     actions: {
         async loadPosts({ commit, state }) {
@@ -70,6 +76,24 @@ export default new Vuex.Store({
                 commit("getPosts", posts);
                 commit("getAuthors", authors);
                 state.postLoaded = true;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        async deletePost({ commit }, postId) {
+            try {
+                const confirmed = window.confirm(
+                    "Are you sure you want to delete this post?"
+                );
+
+                if (!confirmed) {
+                    // If the user cancels the deletion, return without doing anything
+                    return;
+                }
+                // Make the API call to delete the post based on the postId
+                await axios.delete(`http://localhost:3000/posts/${postId}`);
+                // Commit the DELETE_POST mutation to update the state
+                commit("deletePost", postId);
             } catch (error) {
                 console.log(error);
             }

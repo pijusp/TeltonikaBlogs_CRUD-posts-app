@@ -54,7 +54,18 @@ export default {
             return author ? author.name : "Unknown Author";
         },
         goBack() {
-            this.$router.go(-1);
+            this.$router.push({ name: "Blogs" });
+        },
+        // [Vue warn]: Error in nextTick: "TypeError: Cannot read properties of undefined (reading '_wrapper')"
+        // Missing button methods edit and delete
+        deletePost() {
+            this.$store.dispatch("deletePost", this.post.id);
+        },
+        editBlog() {
+            this.$router.push({
+                name: "EditBlog",
+                params: { id: this.post.id },
+            });
         },
     },
 };

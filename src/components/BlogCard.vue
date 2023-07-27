@@ -44,12 +44,12 @@ export default {
     },
     methods: {
         deletePost() {
-            this.$store.dispatch("deletePost", this.post.blogID);
+            this.$store.dispatch("deletePost", this.post.id);
         },
         editBlog() {
             this.$router.push({
                 name: "EditBlog",
-                params: { blogid: this.post.blogID },
+                params: { id: this.post.id },
             });
         },
         getAuthorName(authorId) {
