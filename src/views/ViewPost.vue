@@ -26,7 +26,7 @@
                     <button class="custom-button" @click="deletePost">
                         Delete
                     </button>
-                    <button class="custom-button" @click="editPost">
+                    <button class="custom-button" @click="editBlog">
                         Edit post
                     </button>
                 </div>
@@ -56,8 +56,6 @@ export default {
         goBack() {
             this.$router.push({ name: "Blogs" });
         },
-        // [Vue warn]: Error in nextTick: "TypeError: Cannot read properties of undefined (reading '_wrapper')"
-        // Missing button methods edit and delete
         deletePost() {
             try {
                 const postId = this.currentPost[0].id;
@@ -86,7 +84,7 @@ export default {
                 });
             }
         },
-        editPost() {
+        editBlog() {
             this.$router.push({
                 name: "EditPost",
                 params: { id: this.currentPost[0].id },
@@ -95,7 +93,7 @@ export default {
     },
     computed: {
         editPost() {
-            return this.$store.state.editPost; // You can add this computed property to resolve the error
+            return this.$store.state.editPost;
         },
     },
 };

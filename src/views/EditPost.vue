@@ -12,7 +12,7 @@
                 <vue-editor v-model="blogHTML" />
             </div>
             <div class="blog-actions">
-                <button @click="uploadBlog" class="custom-button">
+                <button @click="updateBlog" class="custom-button">
                     Update Post
                 </button>
             </div>
@@ -42,8 +42,7 @@ export default {
         this.$store.commit("setPostState", this.currentPost[0]);
     },
     methods: {
-        async uploadBlog() {
-            // Check if an author is selected
+        async updateBlog() {
             if (this.blogTitle.length == 0 || this.blogHTML.length == 0) {
                 this.$toast.warning("Please fill out the post!", {
                     position: "top-right",
@@ -70,23 +69,20 @@ export default {
             const day = String(currentDate.getDate()).padStart(2, "0");
 
             // Prepare the data to be sent to the server
-            const newBlogPost = {
+            const updatedBlogPost = {
                 title: this.blogTitle,
                 body: this.blogHTML,
-                authorId: selectedAuthorObject ? selectedAuthorObject.id : null,
-                created_at: `${year}-${month}-${day}`,
                 updated_at: `${year}-${month}-${day}`,
             };
 
             try {
-                // Send the POST request to the server
-                const response = await axios.post(
-                    "http://localhost:3000/posts",
-                    newBlogPost
+                const response = await axios.patch(
+                    `http://localhost:3000/posts/${this.routeID}`, // Use the specific post ID in the URL
+                    updatedBlogPost
                 );
 
-                console.log("Blog post uploaded successfully:", response.data);
-                this.$toast.success("Blog post uploaded successfully!", {
+                console.log("Blog post updated successfully:", response.data);
+                this.$toast.success("Blog post updated successfully!", {
                     position: "top-right",
                     timeout: 3000,
                 });
@@ -97,8 +93,8 @@ export default {
                 this.blogHTML = "";
             } catch (error) {
                 // Handle any errors that occur during the request
-                console.error("Error uploading blog post:", error);
-                this.$toast.warning("Error uploading the post!", {
+                console.error("Error updating blog post:", error);
+                this.$toast.warning("Error updating the post!", {
                     position: "top-right",
                     timeout: 4952,
                     closeOnClick: true,
@@ -178,25 +174,6 @@ export default {
     .invisible {
         opacity: 0 !important;
     }
-
-    /* .errorMsg {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        color: #fff;
-        margin-bottom: 10px;
-        background-color: #ae2519;
-        opacity: 1;
-        transition: 0.5s ease all;
-
-        p {
-            font-size: 14px;
-        }
-
-        span {
-            font-weight: 600;
-        }
-    } */
 
     .blog-info {
         display: flex;
