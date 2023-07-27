@@ -1,7 +1,7 @@
 <template>
     <div class="post-view">
         <div class="container quillWrapper">
-            <h2>{{ this.currentPost[0].blogTitle }}</h2>
+            <h2>{{ this.currentPost[0].title }}</h2>
             <h4>
                 Posted on:
                 {{
@@ -13,14 +13,24 @@
                     )
                 }}
             </h4>
-            <h6>
+            <h4>
                 Written by: {{ getAuthorName(this.currentPost[0].authorId) }}
-            </h6>
+            </h4>
             <div
                 class="post-content ql-editor"
-                v-html="this.currentPost[0].blogHTML"
+                v-html="this.currentPost[0].body"
             ></div>
-            <button class="custom-button" @click="goBack">Go Back</button>
+            <div class="buttons-wrapper">
+                <button class="custom-button" @click="goBack">Go Back</button>
+                <div class="buttons-group">
+                    <button class="custom-button" @click="deletePost">
+                        Delete
+                    </button>
+                    <button class="custom-button" @click="editPost">
+                        Edit post
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -43,6 +53,9 @@ export default {
             const author = this.$store.getters.getAuthorById(authorId);
             return author ? author.name : "Unknown Author";
         },
+        goBack() {
+            this.$router.go(-1);
+        },
     },
 };
 </script>
@@ -53,6 +66,18 @@ export default {
         font-weight: 400;
         font-size: 14px;
         margin-bottom: 24px;
+    }
+    .buttons-wrapper {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 24px;
+    }
+
+    .buttons-group {
+        display: flex;
+    }
+    .buttons-group button {
+        margin-right: 10px;
     }
 }
 </style>
