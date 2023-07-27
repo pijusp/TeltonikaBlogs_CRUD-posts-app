@@ -123,7 +123,6 @@ export default {
                     newBlogPost
                 );
 
-                console.log("Blog post uploaded successfully:", response.data);
                 this.$toast.success("Blog post uploaded successfully!", {
                     position: "top-right",
                     timeout: 3000,

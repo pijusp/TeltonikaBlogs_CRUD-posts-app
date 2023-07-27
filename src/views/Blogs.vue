@@ -5,9 +5,12 @@
                 <span>Toggle Editing Post</span>
                 <input type="checkbox" v-model="editPost" />
             </div>
+            <div v-if="filteredPosts.length === 0" class="no-posts">
+                No posts found 😔.
+            </div>
             <BlogCard
                 :post="post"
-                v-for="(post, index) in posts"
+                v-for="(post, index) in filteredPosts"
                 :key="index"
             />
         </div>
@@ -19,6 +22,7 @@ import BlogCard from "../components/BlogCard.vue";
 export default {
     name: "Blogs",
     components: { BlogCard },
+    props: ["searchQuery"],
     data() {
         return {};
     },
@@ -37,9 +41,27 @@ export default {
                 this.$store.commit("toggleEditPost", payload);
             },
         },
+        filteredPosts() {
+            const searchQuery = this.searchQuery.trim().toLowerCase();
+            if (searchQuery.length === 0) {
+                // If searchQuery is empty, return all posts
+                return this.posts;
+            } else {
+                // Otherwise, filter the posts based on the searchQuery
+                const filteredPosts = this.posts.filter((post) =>
+                    post.title.toLowerCase().includes(searchQuery)
+                );
+                return filteredPosts;
+            }
+        },
     },
     created() {
         this.$store.dispatch("loadPosts");
+    },
+    mounted() {
+        this.$parent.$on("search", (searchQuery) => {
+            this.searchQuery = searchQuery;
+        });
     },
 };
 </script>
@@ -92,6 +114,10 @@ export default {
             background: #fff;
             left: 52px;
         }
+    }
+    .no-posts {
+        margin: auto;
+        font-size: large;
     }
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
     <div class="app-wrapper" v-if="this.$store.state.postLoaded">
         <div class="app">
-            <Navigation />
-            <router-view />
+            <Navigation @search="handleSearch" />
+            <router-view :searchQuery="searchQuery" />
             <Footer />
         </div>
     </div>
@@ -15,13 +15,19 @@ export default {
     name: "app",
     components: { Navigation, Footer },
     data() {
-        return {};
+        return {
+            searchQuery: "",
+        };
+    },
+    methods: {
+        handleSearch(searchQuery) {
+            this.searchQuery = searchQuery;
+        },
     },
     created() {
         this.$store.dispatch("loadPosts");
     },
     mounted() {},
-    methods: {},
     watch: {},
 };
 </script>

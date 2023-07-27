@@ -12,12 +12,7 @@
             <h4>{{ post.title }}</h4>
             <h6>Written by: {{ getAuthorName(post.authorId) }}</h6>
             <h6>
-                Posted on:
-                {{
-                    new Date(post.created_at).toLocaleString("en-us", {
-                        dateStyle: "long",
-                    })
-                }}
+                {{ editedAtDate || createdAtDate }}
             </h6>
             <router-link
                 class="link"
@@ -83,6 +78,27 @@ export default {
     computed: {
         editPost() {
             return this.$store.state.editPost;
+        },
+        createdAtDate() {
+            return (
+                "Created at: " +
+                new Date(this.post.created_at).toLocaleString("en-us", {
+                    dateStyle: "long",
+                })
+            );
+        },
+        editedAtDate() {
+            // Check if the post has been edited
+            if (this.post.created_at !== this.post.updated_at) {
+                return (
+                    "Edited at: " +
+                    new Date(this.post.updated_at).toLocaleString("en-us", {
+                        dateStyle: "long",
+                    })
+                );
+            }
+            // Return null if the post has not been edited
+            return null;
         },
     },
 };
