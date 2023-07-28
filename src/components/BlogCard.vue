@@ -12,12 +12,7 @@
             <h4>{{ post.title }}</h4>
             <h6>Written by: {{ getAuthorName(post.authorId) }}</h6>
             <h6>
-                Posted on:
-                {{
-                    new Date(post.created_at).toLocaleString("en-us", {
-                        dateStyle: "long",
-                    })
-                }}
+                {{ editedAtDate || createdAtDate }}
             </h6>
             <router-link
                 class="link"
@@ -44,12 +39,35 @@ export default {
     },
     methods: {
         deletePost() {
-            this.$store.dispatch("deletePost", this.post.blogID);
+            try {
+                this.$store.dispatch("deletePost", this.post.id);
+                this.$toast.success("Blog post deleted successfully!", {
+                    position: "top-right",
+                    timeout: 3000,
+                });
+            } catch (error) {
+                // Handle any errors that occur during the request
+                console.error("Error deleting blog post:", error);
+                this.$toast.warning("Error deleting the post!", {
+                    position: "top-right",
+                    timeout: 4952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
+            }
         },
         editBlog() {
             this.$router.push({
-                name: "EditBlog",
-                params: { blogid: this.post.blogID },
+                name: "EditPost",
+                params: { id: this.post.id },
             });
         },
         getAuthorName(authorId) {
@@ -60,6 +78,27 @@ export default {
     computed: {
         editPost() {
             return this.$store.state.editPost;
+        },
+        createdAtDate() {
+            return (
+                "Created at: " +
+                new Date(this.post.created_at).toLocaleString("en-us", {
+                    dateStyle: "long",
+                })
+            );
+        },
+        editedAtDate() {
+            // Check if the post has been edited
+            if (this.post.created_at !== this.post.updated_at) {
+                return (
+                    "Edited at: " +
+                    new Date(this.post.updated_at).toLocaleString("en-us", {
+                        dateStyle: "long",
+                    })
+                );
+            }
+            // Return null if the post has not been edited
+            return null;
         },
     },
 };

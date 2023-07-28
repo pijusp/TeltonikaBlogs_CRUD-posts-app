@@ -7,6 +7,15 @@
                 >
             </div>
             <div class="nav-links">
+                <div class="search-bar">
+                    <input
+                        v-model="searchQuery"
+                        @input="handleSearch"
+                        type="text"
+                        placeholder="Search posts..."
+                        class="search-input"
+                    />
+                </div>
                 <ul v-show="!mobile">
                     <router-link class="link" :to="{ name: 'Blogs' }"
                         >Blogs</router-link
@@ -47,6 +56,7 @@ export default {
             mobileNav: null,
             windowWidth: null,
             MenuIcon,
+            searchQuery: "",
         };
     },
     created() {
@@ -56,7 +66,7 @@ export default {
     methods: {
         checkScreen() {
             this.windowWidth = window.innerWidth;
-            if (this.windowWidth <= 750) {
+            if (this.windowWidth <= 768) {
                 this.mobile = true;
                 return;
             }
@@ -66,6 +76,10 @@ export default {
         },
         toggleMobileNav() {
             this.mobileNav = !this.mobileNav;
+        },
+        handleSearch() {
+            // Emit a custom event 'search' with the searchQuery as payload
+            this.$emit("search", this.searchQuery);
         },
     },
 };
@@ -103,6 +117,9 @@ nav {
             font-size: 24px;
             color: beige;
             text-decoration: none;
+            @media only screen and (max-width: 768px) {
+                font-size: 16px;
+            }
         }
     }
 
@@ -124,92 +141,52 @@ nav {
                 margin-right: 0;
             }
         }
+    }
+    .search-bar {
+        position: relative;
+        padding-right: 32px;
 
-        .profile {
-            position: relative;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: #fff;
-            background-color: #303030;
+        .search-input {
+            width: 200px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: none;
+            background-color: #fff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: width 0.3s ease;
 
-            span {
-                pointer-events: none;
+            &:focus {
+                outline: none;
+                width: 250px; /* Expand the input field when focused */
             }
 
-            .profile-menu {
-                position: absolute;
-                top: 60px;
-                right: 0;
-                width: 250px;
-                background-color: #303030;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-
-                .info {
-                    display: flex;
-                    align-items: center;
-                    padding: 15px;
-                    border-bottom: 1px solid #fff;
-
-                    .initials {
-                        position: initial;
-                        width: 40px;
-                        height: 40px;
-                        background-color: #fff;
-                        color: #303030;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        border-radius: 50%;
-                    }
-
-                    .right {
-                        flex: 1;
-                        margin-left: 24px;
-
-                        p:nth-child(1) {
-                            font-size: 14px;
-                        }
-
-                        p:nth-child(2),
-                        p:nth-child(3) {
-                            font-size: 12px;
-                        }
-                    }
+            &::placeholder {
+                color: #aaa;
+            }
+            @media only screen and (max-width: 992px) {
+                width: 140px;
+                &:focus {
+                    outline: none;
+                    width: 170px; /* Expand the input field when focused */
                 }
-
-                .options {
-                    padding: 15px;
-                    .option {
-                        text-decoration: none;
-                        color: #fff;
-                        display: flex;
-                        align-items: center;
-                        margin-bottom: 12px;
-
-                        .icon {
-                            width: 18px;
-                            height: auto;
-                        }
-                        p {
-                            font-size: 14px;
-                            margin-left: 12px;
-                        }
-
-                        &:last-child {
-                            margin-bottom: 0px;
-                        }
-                    }
+            }
+            @media only screen and (max-width: 768px) {
+                width: 200px;
+                &:focus {
+                    outline: none;
+                    width: 250px; /* Expand the input field when focused */
+                }
+            }
+            @media only screen and (max-width: 576px) {
+                width: 125px;
+                &:focus {
+                    outline: none;
+                    width: 160px; /* Expand the input field when focused */
                 }
             }
         }
     }
-
     .mobile-user-menu {
         margin-right: 40px;
     }
@@ -218,7 +195,7 @@ nav {
 .menu-icon {
     cursor: pointer;
     position: absolute;
-    top: 32px;
+    top: 27px;
     right: 25px;
     height: 25px;
     width: auto;

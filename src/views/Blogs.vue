@@ -5,10 +5,22 @@
                 <span>Toggle Editing Post</span>
                 <input type="checkbox" v-model="editPost" />
             </div>
+            <div v-if="filteredPosts.length === 0" class="no-posts">
+                No posts found 😔.
+            </div>
+
             <BlogCard
                 :post="post"
-                v-for="(post, index) in posts"
+                v-for="(post, index) in paginatedPosts"
                 :key="index"
+            />
+        </div>
+        <div class="pagination-container">
+            <pagination
+                :totalPages="totalPages"
+                :perPage="8"
+                :currentPage="currentPage"
+                @pagechanged="onPageChange"
             />
         </div>
     </div>
@@ -16,11 +28,16 @@
 
 <script>
 import BlogCard from "../components/BlogCard.vue";
+import Pagination from "../components/Pagination.vue";
 export default {
     name: "Blogs",
-    components: { BlogCard },
+    components: { BlogCard, Pagination },
+    props: ["searchQuery"],
     data() {
-        return {};
+        return {
+            currentPage: 1,
+            perPage: 8,
+        };
     },
     computed: {
         sampleBlogCards() {
@@ -37,9 +54,47 @@ export default {
                 this.$store.commit("toggleEditPost", payload);
             },
         },
+        filteredPosts() {
+            const searchQuery = this.searchQuery.trim().toLowerCase();
+            if (searchQuery.length === 0) {
+                // If searchQuery is empty, return all posts
+                return this.posts;
+            } else {
+                // Otherwise, filter the posts based on the searchQuery
+                const filteredPosts = this.posts.filter((post) =>
+                    post.title.toLowerCase().includes(searchQuery)
+                );
+                return filteredPosts;
+            }
+        },
+        totalPages() {
+            return Math.ceil(this.filteredPosts.length / this.perPage);
+        },
+
+        // Slice the filteredPosts array to display the correct set of posts on the current page
+        paginatedPosts() {
+            const startIndex = (this.currentPage - 1) * this.perPage;
+            const endIndex = startIndex + this.perPage;
+            return this.filteredPosts.slice(startIndex, endIndex);
+        },
     },
     created() {
         this.$store.dispatch("loadPosts");
+    },
+    mounted() {
+        this.$parent.$on("search", (searchQuery) => {
+            this.searchQuery = searchQuery;
+        });
+    },
+    methods: {
+        onPageChange(page) {
+            console.log(page);
+            this.currentPage = page;
+        },
+        // Handle the onPageChange event from the pagination component
+        onPageChange(page) {
+            this.currentPage = page;
+        },
     },
 };
 </script>
@@ -92,6 +147,18 @@ export default {
             background: #fff;
             left: 52px;
         }
+    }
+    .no-posts {
+        margin: auto;
+        font-size: large;
+    }
+
+    .pagination-container {
+        /* Center the pagination component horizontally */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px; /* Add some margin at the top */
     }
 }
 </style>

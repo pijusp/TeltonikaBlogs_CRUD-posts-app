@@ -7,32 +7,14 @@
                     placeholder="Enter blog title"
                     v-model="blogTitle"
                 />
-                <select v-model="selectedAuthor" class="select-menu">
-                    <option :value="null">Select an author</option>
-                    <option
-                        v-for="author in authors"
-                        :key="author.id"
-                        :value="author.name"
-                    >
-                        {{ author.name }}
-                    </option>
-                </select>
             </div>
             <div class="editor">
                 <vue-editor v-model="blogHTML" />
             </div>
             <div class="blog-actions">
-                <button @click="uploadBlog" class="custom-button">
-                    Publish Blog
+                <button @click="updateBlog" class="custom-button">
+                    Update Post
                 </button>
-                <router-link
-                    class="router-button custom-button"
-                    :to="{
-                        name: 'PostPreview',
-                        params: { selectedAuthor: selectedAuthor },
-                    }"
-                    >Post Preview</router-link
-                >
             </div>
         </div>
     </div>
@@ -45,38 +27,22 @@ import router from "../router";
 
 window.Quill = Quill;
 export default {
-    name: "NewPost",
+    name: "EditPost",
     data() {
         return {
-            authors: [
-                { id: 1, name: "Oliver" },
-                { id: 2, name: "Evelyn" },
-                { id: 3, name: "Leo" },
-                { id: 4, name: "Luna" },
-                { id: 5, name: "Max" },
-            ],
+            routeID: null,
+            currentPost: null,
         };
     },
+    async mounted() {
+        this.routeID = this.$route.params.id;
+        this.currentPost = await this.$store.state.posts.filter((post) => {
+            return post.id === this.routeID;
+        });
+        this.$store.commit("setPostState", this.currentPost[0]);
+    },
     methods: {
-        async uploadBlog() {
-            // Check if an author is selected
-            if (this.selectedAuthor === null) {
-                this.$toast.warning("Please add an author!", {
-                    position: "top-right",
-                    timeout: 2952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
-                });
-                return;
-            }
+        async updateBlog() {
             if (this.blogTitle.length == 0 || this.blogHTML.length == 0) {
                 this.$toast.warning("Please fill out the post!", {
                     position: "top-right",
@@ -102,28 +68,21 @@ export default {
             const month = String(currentDate.getMonth() + 1).padStart(2, "0");
             const day = String(currentDate.getDate()).padStart(2, "0");
 
-            // Find the author's ID based on their name
-            const selectedAuthorObject = this.authors.find(
-                (author) => author.name === this.selectedAuthor
-            );
-
             // Prepare the data to be sent to the server
-            const newBlogPost = {
+            const updatedBlogPost = {
                 title: this.blogTitle,
                 body: this.blogHTML,
-                authorId: selectedAuthorObject ? selectedAuthorObject.id : null,
-                created_at: `${year}-${month}-${day}`,
                 updated_at: `${year}-${month}-${day}`,
             };
 
             try {
-                // Send the POST request to the server
-                const response = await axios.post(
-                    "http://localhost:3000/posts",
-                    newBlogPost
+                const response = await axios.patch(
+                    `http://localhost:3000/posts/${this.routeID}`, // Use the specific post ID in the URL
+                    updatedBlogPost
                 );
 
-                this.$toast.success("Blog post uploaded successfully!", {
+                console.log("Blog post updated successfully:", response.data);
+                this.$toast.success("Blog post updated successfully!", {
                     position: "top-right",
                     timeout: 3000,
                 });
@@ -134,8 +93,8 @@ export default {
                 this.blogHTML = "";
             } catch (error) {
                 // Handle any errors that occur during the request
-                console.error("Error uploading blog post:", error);
-                this.$toast.warning("Error uploading the post!", {
+                console.error("Error updating blog post:", error);
+                this.$toast.warning("Error updating the post!", {
                     position: "top-right",
                     timeout: 4952,
                     closeOnClick: true,
@@ -167,14 +126,6 @@ export default {
             },
             set(payload) {
                 this.$store.commit("newBlogPost", payload);
-            },
-        },
-        selectedAuthor: {
-            get() {
-                return this.$store.state.selectedAuthor;
-            },
-            set(payload) {
-                this.$store.commit("updatePostAuthor", payload);
             },
         },
     },
@@ -223,25 +174,6 @@ export default {
     .invisible {
         opacity: 0 !important;
     }
-
-    /* .errorMsg {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        color: #fff;
-        margin-bottom: 10px;
-        background-color: #ae2519;
-        opacity: 1;
-        transition: 0.5s ease all;
-
-        p {
-            font-size: 14px;
-        }
-
-        span {
-            font-weight: 600;
-        }
-    } */
 
     .blog-info {
         display: flex;

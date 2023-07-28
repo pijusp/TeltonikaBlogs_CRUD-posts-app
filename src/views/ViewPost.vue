@@ -3,15 +3,7 @@
         <div class="container quillWrapper">
             <h2>{{ this.currentPost[0].title }}</h2>
             <h4>
-                Posted on:
-                {{
-                    new Date(this.currentPost[0].created_at).toLocaleString(
-                        "en-us",
-                        {
-                            dateStyle: "long",
-                        }
-                    )
-                }}
+                {{ editedAtDate || createdAtDate }}
             </h4>
             <h4>
                 Written by: {{ getAuthorName(this.currentPost[0].authorId) }}
@@ -26,7 +18,7 @@
                     <button class="custom-button" @click="deletePost">
                         Delete
                     </button>
-                    <button class="custom-button" @click="editPost">
+                    <button class="custom-button" @click="editBlog">
                         Edit post
                     </button>
                 </div>
@@ -54,7 +46,76 @@ export default {
             return author ? author.name : "Unknown Author";
         },
         goBack() {
-            this.$router.go(-1);
+            this.$router.push({ name: "Blogs" });
+        },
+        deletePost() {
+            try {
+                const postId = this.currentPost[0].id;
+                this.$store.dispatch("deletePost", postId);
+                this.$toast.success("Blog post deleted successfully!", {
+                    position: "top-right",
+                    timeout: 3000,
+                });
+                router.push({ name: "Blogs" });
+            } catch (error) {
+                // Handle any errors that occur during the request
+                console.error("Error deleting blog post:", error);
+                this.$toast.warning("Error deleting the post!", {
+                    position: "top-right",
+                    timeout: 4952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
+            }
+        },
+        editBlog() {
+            this.$router.push({
+                name: "EditPost",
+                params: { id: this.currentPost[0].id },
+            });
+        },
+    },
+    computed: {
+        editPost() {
+            return this.$store.state.editPost;
+        },
+        createdAtDate() {
+            return (
+                "Created at: " +
+                new Date(this.currentPost[0].created_at).toLocaleString(
+                    "en-us",
+                    {
+                        dateStyle: "long",
+                    }
+                )
+            );
+        },
+        editedAtDate() {
+            // Check if the post has been edited
+            if (
+                this.currentPost[0].created_at !==
+                this.currentPost[0].updated_at
+            ) {
+                return (
+                    "Edited at: " +
+                    new Date(this.currentPost[0].updated_at).toLocaleString(
+                        "en-us",
+                        {
+                            dateStyle: "long",
+                        }
+                    )
+                );
+            }
+            // Return null if the post has not been edited
+            return null;
         },
     },
 };
