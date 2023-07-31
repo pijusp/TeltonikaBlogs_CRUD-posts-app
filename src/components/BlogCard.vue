@@ -1,6 +1,6 @@
 <template>
     <div class="blog-card">
-        <div v-show="editPost" class="icons">
+        <div class="icons">
             <div @click="editBlog" class="icon">
                 <img :src="Edit" class="edit" />
             </div>
@@ -27,42 +27,63 @@
 <script>
 import Edit from "../assets/Icons/edit-regular.svg";
 import Delete from "../assets/Icons/trash-regular.svg";
+import { mapState, mapGetters, mapActions } from "vuex";
 export default {
     name: "blogCard",
-    props: ["post"],
+    props: ["post", "localEditPost"],
     components: { Edit, Delete },
     data() {
         return {
             Edit,
             Delete,
+            isDeleteConfirmed: false,
         };
     },
     methods: {
-        deletePost() {
-            try {
-                this.$store.dispatch("deletePost", this.post.id);
-                this.$toast.success("Blog post deleted successfully!", {
-                    position: "top-right",
-                    timeout: 3000,
-                });
-            } catch (error) {
-                // Handle any errors that occur during the request
-                console.error("Error deleting blog post:", error);
-                this.$toast.warning("Error deleting the post!", {
-                    position: "top-right",
-                    timeout: 4952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
-                });
+        ...mapActions("posts", ["loadPosts", "deletePost"]),
+        async deletePost() {
+            if (!this.isDeleteConfirmed) {
+                const confirmed = window.confirm(
+                    "Are you sure you want to delete this post?"
+                );
+
+                if (confirmed) {
+                    try {
+                        // Set the flag to true to avoid further confirmations
+                        this.isDeleteConfirmed = true;
+                        console.log(this.post.id);
+                        await this.deletePostFromAPI(this.post.id); // Call the deletePost action directly
+                        this.$toast.success("Blog post deleted successfully!", {
+                            position: "top-right",
+                            timeout: 3000,
+                        });
+                    } catch (error) {
+                        // Handle any errors that occur during the request
+                        console.error("Error deleting blog post:", error);
+                        this.$toast.warning("Error deleting the post!", {
+                            position: "top-right",
+                            timeout: 4952,
+                            closeOnClick: true,
+                            pauseOnFocusLoss: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            draggablePercent: 0.6,
+                            showCloseButtonOnHover: false,
+                            hideProgressBar: true,
+                            closeButton: "button",
+                            icon: true,
+                            rtl: false,
+                        });
+                    }
+                }
             }
+        },
+        async deletePostFromAPI(postId) {
+            // Call the deletePost action from Vuex to delete the post
+            await this.deletePost(postId);
+
+            // Set the flag back to false to enable further confirmations
+            this.isDeleteConfirmed = false;
         },
         editBlog() {
             this.$router.push({
@@ -71,13 +92,15 @@ export default {
             });
         },
         getAuthorName(authorId) {
-            const author = this.$store.getters.getAuthorById(authorId);
+            const author = this.getAuthorById(authorId);
             return author ? author.name : "Unknown Author";
         },
     },
     computed: {
+        ...mapState("posts", ["posts as vuexPosts"], ["editPost"]),
+        ...mapGetters("posts", ["getAuthorById"]),
         editPost() {
-            return this.$store.state.editPost;
+            return this.editPost;
         },
         createdAtDate() {
             return (
