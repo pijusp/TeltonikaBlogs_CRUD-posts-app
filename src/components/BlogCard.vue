@@ -4,7 +4,7 @@
             <div @click="editBlog" class="icon">
                 <img :src="Edit" class="edit" />
             </div>
-            <div @click="deletePost" class="icon">
+            <div @click="handleDeletePost" class="icon">
                 <img :src="Delete" class="delete" />
             </div>
         </div>
@@ -16,7 +16,7 @@
             </h6>
             <router-link
                 class="link"
-                :to="{ name: 'ViewPost', params: { id: this.post.id } }"
+                :to="{ name: 'ViewPost', params: { id: post.id } }"
             >
                 View The Post ➡️
             </router-link>
@@ -30,7 +30,7 @@ import Delete from "../assets/Icons/trash-regular.svg";
 import { mapState, mapGetters, mapActions } from "vuex";
 export default {
     name: "blogCard",
-    props: ["post", "localEditPost"],
+    props: ["post"],
     components: { Edit, Delete },
     data() {
         return {
@@ -41,7 +41,7 @@ export default {
     },
     methods: {
         ...mapActions("posts", ["loadPosts", "deletePost"]),
-        async deletePost() {
+        async handleDeletePost() {
             if (!this.isDeleteConfirmed) {
                 const confirmed = window.confirm(
                     "Are you sure you want to delete this post?"
@@ -97,7 +97,7 @@ export default {
         },
     },
     computed: {
-        ...mapState("posts", ["posts as vuexPosts"], ["editPost"]),
+        ...mapState("posts", ["editPost"]),
         ...mapGetters("posts", ["getAuthorById"]),
         editPost() {
             return this.editPost;

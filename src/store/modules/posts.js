@@ -11,6 +11,7 @@ export default {
         postLoaded: null,
         blogHTML: "Write your blog title here...",
         blogTitle: "",
+        selectedAuthor: null,
         posts: [],
         authors: [
             { id: 1, name: "Oliver" },
@@ -21,7 +22,7 @@ export default {
         ],
     },
     getters: {
-        posts: (state) => {
+        getPosts: (state) => {
             return state.posts;
         },
         getAuthorById: (state) => (authorId) => {
@@ -31,6 +32,7 @@ export default {
         getBlogHTML: (state) => state.blogHTML,
         getBlogAuthor: (state) => state.selectedAuthor,
         getAuthors: (state) => state.authors,
+        getFormData: (state) => state.formData,
     },
     mutations: {
         newBlogPost(state, payload) {
@@ -51,7 +53,7 @@ export default {
         setAuthors(state, authors) {
             state.authors = authors;
         },
-        deletePost(state, postId) {
+        DELETE_POST(state, postId) {
             const index = state.posts.findIndex((post) => post.id === postId);
             if (index !== -1) {
                 state.posts.splice(index, 1);
@@ -60,6 +62,9 @@ export default {
         setPostState(state, payload) {
             state.blogTitle = payload.title;
             state.blogHTML = payload.body;
+        },
+        setFormData(state, formData) {
+            state.formData = formData;
         },
     },
     actions: {
@@ -89,6 +94,7 @@ export default {
                 commit("setPosts", posts);
                 commit("setAuthors", authors);
                 state.postLoaded = true;
+                return posts;
             } catch (error) {
                 console.log(error);
             }
@@ -96,11 +102,9 @@ export default {
         async deletePost({ commit }, postId) {
             try {
                 // Make the API call to delete the post based on the postId
-                console.log("Trying to delete post");
                 await axios.delete(`http://localhost:3000/posts/${postId}`);
-                console.log(postId);
                 // Commit the DELETE_POST mutation to update the state
-                commit("deletePost", postId);
+                commit("DELETE_POST", postId);
             } catch (error) {
                 console.log(error);
             }
@@ -164,6 +168,9 @@ export default {
                     rtl: false,
                 });
             }
+        },
+        saveFormData({ commit }, formData) {
+            commit("setFormData", formData);
         },
     },
 };

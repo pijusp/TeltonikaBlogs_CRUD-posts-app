@@ -1,11 +1,9 @@
 <template>
     <div class="post-view">
         <div class="container quillWrapper">
-            <h2>{{ this.blogTitle }}</h2>
+            <h2>{{ blogTitle }}</h2>
             <div class="post-meta">
-                <span class="post-author"
-                    >By {{ this.$route.params.selectedAuthor }}</span
-                >
+                <span class="post-author">By {{ selectedAuthorName }}</span>
             </div>
             <div class="post-content ql-editor" v-html="blogHTML"></div>
             <button class="custom-button" @click="goBack">Go Back</button>
@@ -14,16 +12,32 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
     name: "PostPreview",
+
     computed: {
+        ...mapGetters("posts", ["getAuthorById"]),
+
         blogTitle() {
-            return this.$store.state.blogTitle;
+            return this.$route.params.blogTitle;
         },
+
         blogHTML() {
-            return this.$store.state.blogHTML;
+            return this.$route.params.blogHTML;
+        },
+
+        selectedAuthor() {
+            return this.$route.params.selectedAuthor;
+        },
+
+        selectedAuthorName() {
+            const author = this.getAuthorById(this.selectedAuthor);
+            return author ? author.name : "Unknown Author";
         },
     },
+
     methods: {
         goBack() {
             this.$router.go(-1);

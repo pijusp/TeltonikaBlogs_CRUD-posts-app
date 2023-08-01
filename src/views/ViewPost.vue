@@ -1,21 +1,19 @@
 <template>
     <div class="post-view" v-if="currentPost">
         <div class="container quillWrapper">
-            <h2>{{ this.currentPost[0].title }}</h2>
+            <h2>{{ this.currentPost.title }}</h2>
             <h4>
                 {{ editedAtDate || createdAtDate }}
             </h4>
-            <h4>
-                Written by: {{ getAuthorName(this.currentPost[0].authorId) }}
-            </h4>
+            <h4>Written by: {{ getAuthorName(this.currentPost.authorId) }}</h4>
             <div
                 class="post-content ql-editor"
-                v-html="this.currentPost[0].body"
+                v-html="this.currentPost.body"
             ></div>
             <div class="buttons-wrapper">
                 <button class="custom-button" @click="goBack">Go Back</button>
                 <div class="buttons-group">
-                    <button class="custom-button" @click="deletePost">
+                    <button class="custom-button" @click="handleDeletePost">
                         Delete
                     </button>
                     <button class="custom-button" @click="editBlog">
@@ -28,53 +26,80 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 export default {
     name: "ViewPost",
     data() {
         return {
             currentPost: null,
+            isDeleteConfirmed: false,
         };
     },
     async mounted() {
-        this.currentPost = await this.$store.state.posts.filter((post) => {
-            return post.id === this.$route.params.id;
-        });
+        try {
+            this.currentPost = await this.loadPosts();
+            const postId = this.$route.params.id;
+            this.currentPost = this.currentPost.find(
+                (post) => post.id === postId
+            );
+        } catch (error) {
+            console.error("Error loading posts:", error);
+        }
     },
     methods: {
+        ...mapActions("posts", ["loadPosts", "deletePost"]),
+        ...mapGetters("posts", ["getPosts", "getAuthorById"]),
         getAuthorName(authorId) {
-            const author = this.$store.getters.getAuthorById(authorId);
+            const author = this.getAuthorById(authorId);
             return author ? author.name : "Unknown Author";
         },
         goBack() {
             this.$router.push({ name: "Blogs" });
         },
-        deletePost() {
-            try {
-                const postId = this.currentPost[0].id;
-                this.$store.dispatch("deletePost", postId);
-                this.$toast.success("Blog post deleted successfully!", {
-                    position: "top-right",
-                    timeout: 3000,
-                });
-                router.push({ name: "Blogs" });
-            } catch (error) {
-                // Handle any errors that occur during the request
-                console.error("Error deleting blog post:", error);
-                this.$toast.warning("Error deleting the post!", {
-                    position: "top-right",
-                    timeout: 4952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
-                });
+        async handleDeletePost() {
+            if (!this.isDeleteConfirmed) {
+                const confirmed = window.confirm(
+                    "Are you sure you want to delete this post?"
+                );
+
+                if (confirmed) {
+                    try {
+                        // Set the flag to true to avoid further confirmations
+                        this.isDeleteConfirmed = true;
+                        await this.deletePostFromAPI(this.currentPost.id); // Call the deletePost action directly
+                        this.$toast.success("Blog post deleted successfully!", {
+                            position: "top-right",
+                            timeout: 3000,
+                        });
+                    } catch (error) {
+                        // Handle any errors that occur during the request
+                        console.error("Error deleting blog post:", error);
+                        this.$toast.warning("Error deleting the post!", {
+                            position: "top-right",
+                            timeout: 4952,
+                            closeOnClick: true,
+                            pauseOnFocusLoss: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            draggablePercent: 0.6,
+                            showCloseButtonOnHover: false,
+                            hideProgressBar: true,
+                            closeButton: "button",
+                            icon: true,
+                            rtl: false,
+                        });
+                    }
+                }
             }
+        },
+        async deletePostFromAPI(postId) {
+            // Call the deletePost action from Vuex to delete the post
+            await this.deletePost(postId);
+
+            // Set the flag back to false to enable further confirmations
+            this.isDeleteConfirmed = false;
+            // Redirecting after delete
+            this.$router.push({ name: "Blogs" });
         },
         editBlog() {
             this.$router.push({
@@ -90,23 +115,17 @@ export default {
         createdAtDate() {
             return (
                 "Created at: " +
-                new Date(this.currentPost[0].created_at).toLocaleString(
-                    "en-us",
-                    {
-                        dateStyle: "long",
-                    }
-                )
+                new Date(this.currentPost.created_at).toLocaleString("en-us", {
+                    dateStyle: "long",
+                })
             );
         },
         editedAtDate() {
             // Check if the post has been edited
-            if (
-                this.currentPost[0].created_at !==
-                this.currentPost[0].updated_at
-            ) {
+            if (this.currentPost.created_at !== this.currentPost.updated_at) {
                 return (
                     "Edited at: " +
-                    new Date(this.currentPost[0].updated_at).toLocaleString(
+                    new Date(this.currentPost.updated_at).toLocaleString(
                         "en-us",
                         {
                             dateStyle: "long",

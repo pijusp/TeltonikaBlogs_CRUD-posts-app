@@ -29,7 +29,11 @@
                     class="router-button custom-button"
                     :to="{
                         name: 'PostPreview',
-                        params: { selectedAuthor: selectedAuthor },
+                        params: {
+                            blogTitle: blogTitle,
+                            blogHTML: blogHTML,
+                            selectedAuthor: selectedAuthor,
+                        },
                     }"
                     >Post Preview</router-link
                 >
@@ -50,6 +54,7 @@ export default {
             blogTitle: "",
             blogHTML: "",
             selectedAuthor: "null",
+            isNavigatingToPreview: false,
         };
     },
     methods: {
@@ -85,6 +90,12 @@ export default {
                 selectedAuthor: this.selectedAuthor,
             });
         },
+        fetchLocalData() {
+            // Fetch data from the Vuex store and set the local data
+            this.blogTitle = this.getBlogTitle;
+            this.blogHTML = this.getBlogHTML;
+            this.selectedAuthor = this.getBlogAuthor;
+        },
     },
     computed: {
         ...mapGetters("posts", [
@@ -109,6 +120,29 @@ export default {
                 this.commit("updatePostAuthor", payload);
             },
         },
+    },
+    watch: {
+        $route(to, from) {
+            if (to.name === "PostPreview") {
+                this.isNavigatingToPreview = true;
+            } else {
+                this.isNavigatingToPreview = false;
+            }
+        },
+    },
+    beforeRouteLeave(to, from, next) {
+        // Before leaving the NewPost route, store the form data in Vuex if not navigating to preview
+        if (!this.isNavigatingToPreview) {
+            this.updateBlogTitle(this.blogTitle);
+            this.newBlogPost(this.blogHTML);
+            this.updatePostAuthor(this.selectedAuthor);
+        }
+
+        next();
+    },
+    created() {
+        // Fetch local data when the component is created
+        this.fetchLocalData();
     },
 };
 </script>

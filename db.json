@@ -89,14 +89,6 @@
       "updated_at": "2023-05-31"
     },
     {
-      "id": 8,
-      "title": "Sed Consequat",
-      "body": "Sed consequat nunc ut purus scelerisque cursus.",
-      "authorId": 1,
-      "created_at": "2023-05-31",
-      "updated_at": "2023-05-31"
-    },
-    {
       "id": 9,
       "title": "Etiam Ultricies",
       "body": "Etiam ultricies risus at nunc congue scelerisque.",
@@ -151,14 +143,6 @@
       "created_at": "2023-07-31",
       "updated_at": "2023-07-31",
       "id": 15
-    },
-    {
-      "title": "Testas nezinia kelintas",
-      "body": "<p>asasas</p>",
-      "authorId": 1,
-      "created_at": "2023-07-31",
-      "updated_at": "2023-07-31",
-      "id": 16
     }
   ]
 }
