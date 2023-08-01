@@ -3,6 +3,11 @@
         <div class="app">
             <Navigation @search="handleSearch" />
             <router-view :searchQuery="searchQuery" />
+            <div v-if="isEditPostModalVisible" class="modal-overlay">
+                <div class="modal-content">
+                    <EditPost :postId="postIdToEdit" />
+                </div>
+            </div>
             <Footer />
         </div>
     </div>
@@ -11,11 +16,13 @@
 <script>
 import Navigation from "./components/Navigation.vue";
 import Footer from "./components/Footer.vue";
+import EditPost from "./components/EditPost.vue";
 import { mapState, mapActions } from "vuex";
 export default {
     name: "app",
-    components: { Navigation, Footer },
+    components: { Navigation, Footer, EditPost },
     computed: {
+        ...mapState("editModal", ["isEditPostModalVisible", "postIdToEdit"]),
         ...mapState(["posts"]),
     },
     data() {
@@ -25,6 +32,7 @@ export default {
     },
     methods: {
         ...mapActions("posts", ["loadPosts"]),
+        ...mapActions("editModal", ["openEditModal", "closeEditModal"]),
         handleSearch(searchQuery) {
             this.searchQuery = searchQuery;
         },

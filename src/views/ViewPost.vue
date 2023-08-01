@@ -16,7 +16,7 @@
                     <button class="custom-button" @click="handleDeletePost">
                         Delete
                     </button>
-                    <button class="custom-button" @click="editBlog">
+                    <button class="custom-button" @click="openEditModal">
                         Edit post
                     </button>
                 </div>
@@ -43,11 +43,12 @@ export default {
                 (post) => post.id === postId
             );
         } catch (error) {
-            console.error("Error loading posts:", error);
+            console.error("Error loading modal:", error);
         }
     },
     methods: {
         ...mapActions("posts", ["loadPosts", "deletePost"]),
+        ...mapActions("editModal", ["openEditModal"]),
         ...mapGetters("posts", ["getPosts", "getAuthorById"]),
         getAuthorName(authorId) {
             const author = this.getAuthorById(authorId);

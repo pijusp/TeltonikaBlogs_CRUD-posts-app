@@ -32,7 +32,6 @@ export default {
         getBlogHTML: (state) => state.blogHTML,
         getBlogAuthor: (state) => state.selectedAuthor,
         getAuthors: (state) => state.authors,
-        getFormData: (state) => state.formData,
     },
     mutations: {
         newBlogPost(state, payload) {
@@ -62,9 +61,6 @@ export default {
         setPostState(state, payload) {
             state.blogTitle = payload.title;
             state.blogHTML = payload.body;
-        },
-        setFormData(state, formData) {
-            state.formData = formData;
         },
     },
     actions: {
@@ -168,9 +164,6 @@ export default {
                     rtl: false,
                 });
             }
-        },
-        saveFormData({ commit }, formData) {
-            commit("setFormData", formData);
         },
     },
 };

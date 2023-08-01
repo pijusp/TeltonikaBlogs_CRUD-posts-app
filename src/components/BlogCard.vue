@@ -37,10 +37,13 @@ export default {
             Edit,
             Delete,
             isDeleteConfirmed: false,
+            isEditPostModalVisible: false,
+            postIdToEdit: null,
         };
     },
     methods: {
         ...mapActions("posts", ["loadPosts", "deletePost"]),
+        ...mapActions("editModal", ["openEditModal"]),
         async handleDeletePost() {
             if (!this.isDeleteConfirmed) {
                 const confirmed = window.confirm(
@@ -86,10 +89,17 @@ export default {
             this.isDeleteConfirmed = false;
         },
         editBlog() {
-            this.$router.push({
-                name: "EditPost",
-                params: { id: this.post.id },
-            });
+            if (this.post.id) {
+                this.postIdToEdit = this.post.id;
+                this.isEditPostModalVisible = true;
+                console.log("EditBlog action triggered");
+                this.$store.dispatch(
+                    "editModal/openEditModal",
+                    this.postIdToEdit
+                );
+            } else {
+                console.error("Invalid post ID.");
+            }
         },
         getAuthorName(authorId) {
             const author = this.getAuthorById(authorId);

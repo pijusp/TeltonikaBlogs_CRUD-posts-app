@@ -4,7 +4,6 @@ import Blogs from "../views/Blogs.vue";
 import NewPost from "../views/NewPost.vue";
 import PostPreview from "../views/PostPreview.vue";
 import ViewPost from "../views/ViewPost.vue";
-import EditPost from "../views/EditPost.vue";
 
 Vue.use(VueRouter);
 
@@ -39,14 +38,6 @@ const routes = [
         component: ViewPost,
         meta: {
             title: "View Post",
-        },
-    },
-    {
-        path: "/edit-post/:id",
-        name: "EditPost",
-        component: EditPost,
-        meta: {
-            title: "Edit Post",
         },
     },
     {
