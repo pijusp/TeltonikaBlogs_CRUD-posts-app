@@ -1,5 +1,5 @@
 <template>
-    <div class="app-wrapper" v-if="this.$store.state.postLoaded">
+    <div class="app-wrapper">
         <div class="app">
             <Navigation @search="handleSearch" />
             <router-view :searchQuery="searchQuery" />
@@ -11,21 +11,26 @@
 <script>
 import Navigation from "./components/Navigation.vue";
 import Footer from "./components/Footer.vue";
+import { mapState, mapActions } from "vuex";
 export default {
     name: "app",
     components: { Navigation, Footer },
+    computed: {
+        ...mapState(["posts"]),
+    },
     data() {
         return {
             searchQuery: "",
         };
     },
     methods: {
+        ...mapActions("posts", ["loadPosts"]),
         handleSearch(searchQuery) {
             this.searchQuery = searchQuery;
         },
     },
     created() {
-        this.$store.dispatch("loadPosts");
+        this.loadPosts();
     },
     mounted() {},
     watch: {},

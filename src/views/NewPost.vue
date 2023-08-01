@@ -10,9 +10,9 @@
                 <select v-model="selectedAuthor" class="select-menu">
                     <option :value="null">Select an author</option>
                     <option
-                        v-for="author in authors"
+                        v-for="author in getAuthors"
                         :key="author.id"
-                        :value="author.name"
+                        :value="author.id"
                     >
                         {{ author.name }}
                     </option>
@@ -22,14 +22,18 @@
                 <vue-editor v-model="blogHTML" />
             </div>
             <div class="blog-actions">
-                <button @click="uploadBlog" class="custom-button">
+                <button @click="handleCreatePost" class="custom-button">
                     Publish Blog
                 </button>
                 <router-link
                     class="router-button custom-button"
                     :to="{
                         name: 'PostPreview',
-                        params: { selectedAuthor: selectedAuthor },
+                        params: {
+                            blogTitle: blogTitle,
+                            blogHTML: blogHTML,
+                            selectedAuthor: selectedAuthor,
+                        },
                     }"
                     >Post Preview</router-link
                 >
@@ -40,143 +44,105 @@
 
 <script>
 import Quill from "quill";
-import axios from "axios";
-import router from "../router";
+import { mapMutations, mapActions, mapGetters } from "vuex";
 
 window.Quill = Quill;
 export default {
     name: "NewPost",
     data() {
         return {
-            authors: [
-                { id: 1, name: "Oliver" },
-                { id: 2, name: "Evelyn" },
-                { id: 3, name: "Leo" },
-                { id: 4, name: "Luna" },
-                { id: 5, name: "Max" },
-            ],
+            blogTitle: "",
+            blogHTML: "",
+            selectedAuthor: "null",
+            isNavigatingToPreview: false,
         };
     },
     methods: {
-        async uploadBlog() {
+        // Map the mutations to update the Vuex store
+        ...mapMutations("posts", [
+            "updateBlogTitle",
+            "newBlogPost",
+            "updatePostAuthor",
+        ]),
+        // Map the actions to interact with the Vuex store and API
+        ...mapActions("posts", ["loadPosts", "createPost"]),
+        handleCreatePost() {
+            console.log(this.selectedAuthor);
             // Check if an author is selected
-            if (this.selectedAuthor === null) {
+            if (!this.selectedAuthor) {
                 this.$toast.warning("Please add an author!", {
-                    position: "top-right",
-                    timeout: 2952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
+                    /* Toast options */
                 });
                 return;
             }
+
             if (this.blogTitle.length == 0 || this.blogHTML.length == 0) {
                 this.$toast.warning("Please fill out the post!", {
-                    position: "top-right",
-                    timeout: 2952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
+                    /* Toast options */
                 });
                 return;
             }
-            // Get the current date and time
-            const currentDate = new Date();
 
-            // Format the date to yyyy-mm-dd format
-            const year = currentDate.getFullYear();
-            const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-            const day = String(currentDate.getDate()).padStart(2, "0");
-
-            // Find the author's ID based on their name
-            const selectedAuthorObject = this.authors.find(
-                (author) => author.name === this.selectedAuthor
-            );
-
-            // Prepare the data to be sent to the server
-            const newBlogPost = {
-                title: this.blogTitle,
-                body: this.blogHTML,
-                authorId: selectedAuthorObject ? selectedAuthorObject.id : null,
-                created_at: `${year}-${month}-${day}`,
-                updated_at: `${year}-${month}-${day}`,
-            };
-
-            try {
-                // Send the POST request to the server
-                const response = await axios.post(
-                    "http://localhost:3000/posts",
-                    newBlogPost
-                );
-
-                this.$toast.success("Blog post uploaded successfully!", {
-                    position: "top-right",
-                    timeout: 3000,
-                });
-                router.push({ name: "Blogs" });
-
-                this.blogTitle = "";
-                this.selectedAuthor = null;
-                this.blogHTML = "";
-            } catch (error) {
-                // Handle any errors that occur during the request
-                console.error("Error uploading blog post:", error);
-                this.$toast.warning("Error uploading the post!", {
-                    position: "top-right",
-                    timeout: 4952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
-                });
-            }
+            // Call the createPost action and pass the required data
+            this.createPost({
+                blogTitle: this.blogTitle,
+                blogHTML: this.blogHTML,
+                selectedAuthor: this.selectedAuthor,
+            });
+        },
+        fetchLocalData() {
+            // Fetch data from the Vuex store and set the local data
+            this.blogTitle = this.getBlogTitle;
+            this.blogHTML = this.getBlogHTML;
+            this.selectedAuthor = this.getBlogAuthor;
         },
     },
     computed: {
-        blogTitle: {
+        ...mapGetters("posts", [
+            "getBlogTitle",
+            "getBlogHTML",
+            "getBlogAuthor",
+            "getAuthors",
+        ]),
+        setPost: {
             get() {
-                return this.$store.state.blogTitle;
+                // Getter: Fetch data from the store
+                return {
+                    blogTitle: this.getBlogTitle,
+                    blogHTML: this.getBlogHTML,
+                    selectedAuthor: this.getBlogAuthor,
+                };
             },
             set(payload) {
-                this.$store.commit("updateBlogTitle", payload);
+                // Setter: Update data in the store
+                this.commit("updateBlogTitle", payload);
+                this.commit("newBlogPost", payload);
+                this.commit("updatePostAuthor", payload);
             },
         },
-        blogHTML: {
-            get() {
-                return this.$store.state.blogHTML;
-            },
-            set(payload) {
-                this.$store.commit("newBlogPost", payload);
-            },
+    },
+    watch: {
+        $route(to, from) {
+            if (to.name === "PostPreview") {
+                this.isNavigatingToPreview = true;
+            } else {
+                this.isNavigatingToPreview = false;
+            }
         },
-        selectedAuthor: {
-            get() {
-                return this.$store.state.selectedAuthor;
-            },
-            set(payload) {
-                this.$store.commit("updatePostAuthor", payload);
-            },
-        },
+    },
+    beforeRouteLeave(to, from, next) {
+        // Before leaving the NewPost route, store the form data in Vuex if not navigating to preview
+        if (!this.isNavigatingToPreview) {
+            this.updateBlogTitle(this.blogTitle);
+            this.newBlogPost(this.blogHTML);
+            this.updatePostAuthor(this.selectedAuthor);
+        }
+
+        next();
+    },
+    created() {
+        // Fetch local data when the component is created
+        this.fetchLocalData();
     },
 };
 </script>

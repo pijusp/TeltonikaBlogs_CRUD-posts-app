@@ -1,10 +1,10 @@
 <template>
     <div class="blog-card-wrap">
         <div class="blog-cards container">
-            <div class="toggle-edit">
+            <!-- <div class="toggle-edit">
                 <span>Toggle Editing Post</span>
-                <input type="checkbox" v-model="editPost" />
-            </div>
+                <input type="checkbox" />
+            </div> -->
             <div v-if="filteredPosts.length === 0" class="no-posts">
                 No posts found 😔.
             </div>
@@ -20,6 +20,7 @@
                 :totalPages="totalPages"
                 :perPage="8"
                 :currentPage="currentPage"
+                :localEditPost="localEditPost"
                 @pagechanged="onPageChange"
             />
         </div>
@@ -29,6 +30,7 @@
 <script>
 import BlogCard from "../components/BlogCard.vue";
 import Pagination from "../components/Pagination.vue";
+import { mapState, mapActions } from "vuex";
 export default {
     name: "Blogs",
     components: { BlogCard, Pagination },
@@ -37,23 +39,14 @@ export default {
         return {
             currentPage: 1,
             perPage: 8,
+            localEditPost: null,
         };
     },
     computed: {
-        sampleBlogCards() {
-            return this.$store.state.sampleBlogCards;
-        },
-        posts() {
-            return this.$store.getters.posts;
-        },
-        editPost: {
-            get() {
-                return this.$store.state.editPost;
-            },
-            set(payload) {
-                this.$store.commit("toggleEditPost", payload);
-            },
-        },
+        ...mapState({
+            posts: (state) => state.posts.posts,
+        }),
+
         filteredPosts() {
             const searchQuery = this.searchQuery.trim().toLowerCase();
             if (searchQuery.length === 0) {
@@ -70,7 +63,6 @@ export default {
         totalPages() {
             return Math.ceil(this.filteredPosts.length / this.perPage);
         },
-
         // Slice the filteredPosts array to display the correct set of posts on the current page
         paginatedPosts() {
             const startIndex = (this.currentPage - 1) * this.perPage;
@@ -79,20 +71,18 @@ export default {
         },
     },
     created() {
-        this.$store.dispatch("loadPosts");
+        this.loadPosts();
     },
     mounted() {
         this.$parent.$on("search", (searchQuery) => {
             this.searchQuery = searchQuery;
         });
     },
+
     methods: {
+        ...mapActions("posts", ["loadPosts"]),
         onPageChange(page) {
             console.log(page);
-            this.currentPage = page;
-        },
-        // Handle the onPageChange event from the pagination component
-        onPageChange(page) {
             this.currentPage = page;
         },
     },
