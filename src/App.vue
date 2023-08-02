@@ -3,10 +3,16 @@
         <div class="app">
             <Navigation @search="handleSearch" />
             <router-view :searchQuery="searchQuery" />
-            <div v-if="isEditPostModalVisible" class="modal-overlay">
-                <div class="modal-content">
-                    <EditPost :postId="postIdToEdit" />
-                </div>
+            <div
+                class="modal"
+                v-if="isEditPostModalVisible"
+                :class="{ 'modal-open': isEditPostModalVisible }"
+            >
+                <div class="modal-background"></div>
+                <EditPost
+                    :postId="postIdToEdit"
+                    :fetchCurrentPost="fetchCurrentPost"
+                />
             </div>
             <Footer />
         </div>
@@ -36,6 +42,16 @@ export default {
         handleSearch(searchQuery) {
             this.searchQuery = searchQuery;
         },
+        async fetchCurrentPost(postId) {
+            try {
+                const currentPost = await this.loadPosts();
+                const post = currentPost.find((post) => post.id === postId);
+                console.log("Fetched post data:", post);
+                return post;
+            } catch (error) {
+                console.error("Error loading posts:", error);
+            }
+        },
     },
     created() {
         this.loadPosts();
@@ -54,6 +70,9 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+.modal-open {
+    display: block;
 }
 
 .app {

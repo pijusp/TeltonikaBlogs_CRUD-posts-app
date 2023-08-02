@@ -1,5 +1,3 @@
-// posts.js
-
 import axios from "axios";
 import Vue from "vue";
 import router from "../../router";
@@ -9,7 +7,7 @@ export default {
     state: {
         editPost: null,
         postLoaded: null,
-        blogHTML: "Write your blog title here...",
+        blogHTML: "Write your blog content here...",
         blogTitle: "",
         selectedAuthor: null,
         posts: [],
@@ -26,7 +24,13 @@ export default {
             return state.posts;
         },
         getAuthorById: (state) => (authorId) => {
-            return state.authors.find((author) => author.id === authorId);
+            const author = state.authors.find(
+                (author) => author.id === authorId
+            );
+            return author ? JSON.parse(JSON.stringify(author)) : null;
+        },
+        getAuthorNameById: (state) => (authorId) => {
+            return state.authors.find((author) => author.id === authorId)?.name;
         },
         getBlogTitle: (state) => state.blogTitle,
         getBlogHTML: (state) => state.blogHTML,
@@ -34,7 +38,7 @@ export default {
         getAuthors: (state) => state.authors,
     },
     mutations: {
-        newBlogPost(state, payload) {
+        updateBlogHTML(state, payload) {
             state.blogHTML = payload;
         },
         updateBlogTitle(state, payload) {
@@ -61,6 +65,9 @@ export default {
         setPostState(state, payload) {
             state.blogTitle = payload.title;
             state.blogHTML = payload.body;
+        },
+        setPostLoaded(state, value) {
+            state.postLoaded = value;
         },
     },
     actions: {
@@ -89,7 +96,7 @@ export default {
                 // Update the Vuex state with the loaded posts and authors
                 commit("setPosts", posts);
                 commit("setAuthors", authors);
-                state.postLoaded = true;
+                commit("setPostLoaded", true);
                 return posts;
             } catch (error) {
                 console.log(error);
@@ -117,7 +124,7 @@ export default {
             const day = String(currentDate.getDate()).padStart(2, "0");
 
             // Prepare the data to be sent to the server
-            const newBlogPost = {
+            const updateBlogHTML = {
                 title: payload.blogTitle,
                 body: payload.blogHTML,
                 authorId: payload.selectedAuthor,
@@ -129,7 +136,7 @@ export default {
                 // Send the POST request to the server
                 const response = await axios.post(
                     "http://localhost:3000/posts",
-                    newBlogPost
+                    updateBlogHTML
                 );
 
                 // Display a success toast message
@@ -143,7 +150,7 @@ export default {
 
                 // Clear the form fields after successful post creation
                 commit("updateBlogTitle", "");
-                commit("newBlogPost", "");
+                commit("updateBlogHTML", "");
                 commit("updatePostAuthor", null);
             } catch (error) {
                 // Handle any errors that occur during the request

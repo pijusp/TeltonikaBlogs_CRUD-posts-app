@@ -1,15 +1,15 @@
 <template>
     <div class="post-view" v-if="currentPost">
         <div class="container quillWrapper">
-            <h2>{{ this.currentPost.title }}</h2>
+            <h2>{{ currentPost.title }}</h2>
             <h4>
                 {{ editedAtDate || createdAtDate }}
             </h4>
-            <h4>Written by: {{ getAuthorName(this.currentPost.authorId) }}</h4>
-            <div
-                class="post-content ql-editor"
-                v-html="this.currentPost.body"
-            ></div>
+            <h4>
+                Written by:
+                {{ getAuthorName(currentPost.authorId) }}
+            </h4>
+            <div class="post-content ql-editor" v-html="currentPost.body"></div>
             <div class="buttons-wrapper">
                 <button class="custom-button" @click="goBack">Go Back</button>
                 <div class="buttons-group">
@@ -35,24 +35,35 @@ export default {
             isDeleteConfirmed: false,
         };
     },
-    async mounted() {
-        try {
-            this.currentPost = await this.loadPosts();
-            const postId = this.$route.params.id;
-            this.currentPost = this.currentPost.find(
-                (post) => post.id === postId
-            );
-        } catch (error) {
-            console.error("Error loading modal:", error);
-        }
+    created() {
+        this.initCurrentPost();
     },
     methods: {
         ...mapActions("posts", ["loadPosts", "deletePost"]),
         ...mapActions("editModal", ["openEditModal"]),
-        ...mapGetters("posts", ["getPosts", "getAuthorById"]),
-        getAuthorName(authorId) {
-            const author = this.getAuthorById(authorId);
-            return author ? author.name : "Unknown Author";
+        ...mapGetters("posts", ["getPosts", "getAuthorNameById", "getAuthors"]),
+        async initCurrentPost() {
+            try {
+                // Load the posts from the Vuex store
+                await this.loadPosts();
+
+                // Get the current post ID from the route params
+                const postId = this.$route.params.id;
+
+                // Find the current post in the loaded posts
+                this.currentPost = this.getPosts().find(
+                    (post) => post.id === postId
+                );
+
+                if (!this.currentPost) {
+                    console.error(
+                        "Post not found or null currentPost:",
+                        this.currentPost
+                    );
+                }
+            } catch (error) {
+                console.error("Error loading modal:", error);
+            }
         },
         goBack() {
             this.$router.push({ name: "Blogs" });
@@ -105,7 +116,7 @@ export default {
         editBlog() {
             this.$router.push({
                 name: "EditPost",
-                params: { id: this.currentPost[0].id },
+                params: { id: this.currentPost.id },
             });
         },
     },
@@ -136,6 +147,11 @@ export default {
             }
             // Return null if the post has not been edited
             return null;
+        },
+        getAuthorName(authorId) {
+            const authorName = this.getAuthorNameById(authorId);
+
+            return authorName;
         },
     },
 };

@@ -5,7 +5,7 @@
                 <img :src="Edit" class="edit" />
             </div>
             <div @click="handleDeletePost" class="icon">
-                <img :src="Delete" class="delete" />
+                <img :src="Delete" class="trashbin" />
             </div>
         </div>
         <div class="info">
@@ -159,7 +159,7 @@ export default {
         position: absolute;
         top: 10px;
         right: 10px;
-        z-index: 99;
+        z-index: 10;
         .icon {
             display: flex;
             justify-content: center;
@@ -180,7 +180,7 @@ export default {
             }
 
             .edit,
-            .delete {
+            .trashbin {
                 pointer-events: none;
                 height: 15px;
                 width: auto;

@@ -61,7 +61,7 @@ export default {
         // Map the mutations to update the Vuex store
         ...mapMutations("posts", [
             "updateBlogTitle",
-            "newBlogPost",
+            "updateBlogHTML",
             "updatePostAuthor",
         ]),
         // Map the actions to interact with the Vuex store and API
@@ -116,7 +116,7 @@ export default {
             set(payload) {
                 // Setter: Update data in the store
                 this.commit("updateBlogTitle", payload);
-                this.commit("newBlogPost", payload);
+                this.commit("updateBlogHTML", payload);
                 this.commit("updatePostAuthor", payload);
             },
         },
@@ -134,7 +134,7 @@ export default {
         // Before leaving the NewPost route, store the form data in Vuex if not navigating to preview
         if (!this.isNavigatingToPreview) {
             this.updateBlogTitle(this.blogTitle);
-            this.newBlogPost(this.blogHTML);
+            this.updateBlogHTML(this.blogHTML);
             this.updatePostAuthor(this.selectedAuthor);
         }
 

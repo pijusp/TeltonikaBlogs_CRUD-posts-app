@@ -1,19 +1,23 @@
 <template>
-    <div class="new-post">
-        <div class="container">
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Edit post</p>
+            <button class="delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
             <div class="blog-info">
                 <input type="text" v-model="blogTitle" />
             </div>
             <div class="editor">
                 <vue-editor v-model="blogHTML" />
             </div>
-            <div class="blog-actions">
-                <button @click="handleUpdateBlog" class="custom-button">
-                    Update Post
-                </button>
-                <button @click="closeModal" class="custom-button">Close</button>
-            </div>
-        </div>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" @click="handleUpdateBlog">
+                Save changes
+            </button>
+            <button class="button" @click="closeModal">Cancel</button>
+        </footer>
     </div>
 </template>
 
@@ -32,17 +36,21 @@ export default {
             type: Number,
             required: true,
         },
+        fetchCurrentPost: {
+            type: Function,
+            required: true,
+        },
     },
-    async mounted() {
-        try {
-            this.currentPost = await this.loadPosts();
-            const postId = this.$route.params.id;
-            this.currentPost = this.currentPost.find(
-                (post) => post.id === postId
-            );
-        } catch (error) {
-            console.error("Error loading posts:", error);
-        }
+    async created() {
+        this.currentPost = await this.fetchCurrentPost(this.postId);
+        console.log("Created hook - currentPost:", this.currentPost);
+    },
+    watch: {
+        postId: async function (postId) {
+            console.log("Watch postId", postId);
+            await this.setPostDataFromCurrentPost(postId);
+            console.log("Watch postId - currentPost:", this.currentPost);
+        },
     },
     computed: {
         ...mapGetters("posts", ["getBlogTitle", "getBlogHTML"]),
@@ -62,12 +70,27 @@ export default {
                 return this.getBlogHTML;
             },
             set(payload) {
-                this.$store.commit("posts/newBlogPost", payload);
+                this.$store.commit("posts/updateBlogHTML", payload);
             },
         },
     },
     methods: {
-        ...mapActions("posts", ["updateBlogTitle", "newBlogPost", "loadPosts"]),
+        ...mapActions("posts", [
+            "updateBlogTitle",
+            "updateBlogHTML",
+            "loadPosts",
+        ]),
+        async setPostDataFromCurrentPost(postId = this.postId) {
+            try {
+                console.log("Setting post data from current post");
+                const currentPost = await this.fetchCurrentPost(postId);
+                this.blogTitle = currentPost.title;
+                console.log("Setting blog title" - this.blogTitle);
+                this.blogHTML = currentPost.body;
+            } catch (error) {
+                console.error("Error setting post data:", error);
+            }
+        },
         handleUpdateBlog() {
             // Save the changes to the store via the updateBlogTitle and updateBlogHTML actions.
             this.$store.dispatch("editModal/updateBlog", {
@@ -89,7 +112,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<!-- <style lang="scss" scoped>
 .new-post {
     position: relative;
     height: 100%;
@@ -201,4 +224,4 @@ export default {
         }
     }
 }
-</style>
+</style> -->
