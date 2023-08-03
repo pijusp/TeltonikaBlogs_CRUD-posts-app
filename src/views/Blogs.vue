@@ -1,14 +1,9 @@
 <template>
     <div class="blog-card-wrap">
         <div class="blog-cards container">
-            <!-- <div class="toggle-edit">
-                <span>Toggle Editing Post</span>
-                <input type="checkbox" />
-            </div> -->
             <div v-if="filteredPosts.length === 0" class="no-posts">
                 No posts found 😔.
             </div>
-
             <BlogCard
                 :post="post"
                 v-for="(post, index) in paginatedPosts"

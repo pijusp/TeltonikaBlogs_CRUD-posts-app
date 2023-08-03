@@ -46,7 +46,6 @@ export default {
             try {
                 const currentPost = await this.loadPosts();
                 const post = currentPost.find((post) => post.id === postId);
-                console.log("Fetched post data:", post);
                 return post;
             } catch (error) {
                 console.error("Error loading posts:", error);

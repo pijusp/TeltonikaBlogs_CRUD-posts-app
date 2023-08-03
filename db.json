@@ -35,26 +35,26 @@
     {
       "id": 1,
       "title": "Lorem Ipsum",
-      "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vino veritas</p>",
+      "body": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vino veritas. Roma Invicta Eterna. Ad mortem, inimicus. Alea iacta est.</p>",
       "authorId": 3,
       "created_at": "2023-05-31",
-      "updated_at": "2023-07-27"
+      "updated_at": "2023-08-03"
     },
     {
       "id": 2,
       "title": "Vivamus Euismod",
-      "body": "Vivamus euismod tempus massa, non cursus velit maximus sed.",
+      "body": "<p>Vivamus euismod tempus massa, non cursus velit maximus sed. Vita incerta, mors certissima .</p>",
       "authorId": 5,
       "created_at": "2023-05-31",
-      "updated_at": "2023-05-31"
+      "updated_at": "2023-08-03"
     },
     {
       "id": 3,
       "title": "Praesent Tristique",
-      "body": "Praesent tristique orci non lorem efficitur, ut fermentum turpis rutrum.",
+      "body": "<p>Praesent tristique orci non lorem efficitur, ut fermentum turpis rutrum. Ad mortem</p>",
       "authorId": 1,
       "created_at": "2023-05-31",
-      "updated_at": "2023-05-31"
+      "updated_at": "2023-08-03"
     },
     {
       "id": 4,

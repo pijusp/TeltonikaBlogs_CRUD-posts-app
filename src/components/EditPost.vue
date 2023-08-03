@@ -2,7 +2,11 @@
     <div class="modal-card">
         <header class="modal-card-head">
             <p class="modal-card-title">Edit post</p>
-            <button class="delete" aria-label="close"></button>
+            <button
+                class="delete"
+                aria-label="close"
+                @click="closeModal"
+            ></button>
         </header>
         <section class="modal-card-body">
             <div class="blog-info">
@@ -43,14 +47,7 @@ export default {
     },
     async created() {
         this.currentPost = await this.fetchCurrentPost(this.postId);
-        console.log("Created hook - currentPost:", this.currentPost);
-    },
-    watch: {
-        postId: async function (postId) {
-            console.log("Watch postId", postId);
-            await this.setPostDataFromCurrentPost(postId);
-            console.log("Watch postId - currentPost:", this.currentPost);
-        },
+        this.setPostDataFromCurrentPost(this.currentPost.postId);
     },
     computed: {
         ...mapGetters("posts", ["getBlogTitle", "getBlogHTML"]),
@@ -80,30 +77,82 @@ export default {
             "updateBlogHTML",
             "loadPosts",
         ]),
+        ...mapActions("editModal", ["updateBlog"]),
         async setPostDataFromCurrentPost(postId = this.postId) {
             try {
-                console.log("Setting post data from current post");
                 const currentPost = await this.fetchCurrentPost(postId);
                 this.blogTitle = currentPost.title;
-                console.log("Setting blog title" - this.blogTitle);
                 this.blogHTML = currentPost.body;
             } catch (error) {
-                console.error("Error setting post data:", error);
+                this.$toast.warning(("Error updating the post!", error), {
+                    position: "top-right",
+                    timeout: 4952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
             }
         },
         handleUpdateBlog() {
-            // Save the changes to the store via the updateBlogTitle and updateBlogHTML actions.
-            this.$store.dispatch("editModal/updateBlog", {
-                blogTitle: this.blogTitle,
-                blogHTML: this.blogHTML,
-            });
+            if (this.blogTitle.length === 0 || this.blogHTML.length === 0) {
+                this.$toast.warning("Please fill out the post!", {
+                    position: "top-right",
+                    timeout: 2952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
+                return;
+            }
 
-            // You can also dispatch an action to update the post on the server if needed.
-            // Call your API update method here.
+            // Call the updateBlog action to update the post on the server.
+            try {
+                this.updateBlog({
+                    postId: this.postId,
+                    blogTitle: this.blogTitle,
+                    blogHTML: this.blogHTML,
+                });
+                this.$toast.success("Blog post updated successfully!", {
+                    position: "top-right",
+                    timeout: 3000,
+                });
+            } catch (error) {
+                console.error("Error updating blog post:", error);
+                this.$toast.warning("Error updating the post!", {
+                    position: "top-right",
+                    timeout: 4952,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: false,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: true,
+                    rtl: false,
+                });
+            }
 
             // Close the modal after saving the changes.
             this.closeModal();
+            this.$router.push({ name: "Blogs" });
         },
+
         closeModal() {
             // Dispatch an action to close the modal.
             this.$store.dispatch("editModal/closeEditModal");
@@ -111,117 +160,8 @@ export default {
     },
 };
 </script>
-
-<!-- <style lang="scss" scoped>
-.new-post {
-    position: relative;
-    height: 100%;
-
-    button {
-        margin-top: 0;
-    }
-
-    .router-button {
-        text-decoration: none;
-        color: #fff;
-    }
-
-    label,
-    button,
-    .router-button {
-        transition: 0.5s ease-in-out all;
-        align-self: center;
-        font-size: 14px;
-        cursor: pointer;
-        border-radius: 20px;
-        padding: 12px 24px;
-        color: #fff;
-        background-color: #35a7ff;
-        text-decoration: none;
-
-        &:hover {
-            background-color: rgba(28, 61, 209, 0.7);
-        }
-    }
-
-    .container {
-        position: relative;
-        height: 100%;
-        padding: 10px 25px 60px;
-    }
-
-    // error styling
-    .invisible {
-        opacity: 0 !important;
-    }
-
-    .blog-info {
-        display: flex;
-        margin-bottom: 32px;
-
-        input:nth-child(1) {
-            min-width: 300px;
-        }
-
-        input {
-            transition: 0.5s ease-in-out all;
-            padding: 10px 4px;
-            border: none;
-            border-bottom: 1px solid #303030;
-
-            &:focus {
-                outline: none;
-                box-shadow: 0 1px 0 0 #303030;
-            }
-        }
-        .select-menu {
-            margin-left: 20px;
-            width: 120px;
-            @media screen and (max-width: 767px) {
-                margin-left: 0;
-                margin-top: 10px;
-            }
-        }
-        @media screen and (max-width: 767px) {
-            flex-direction: column;
-            align-items: flex-start; /* Align items to the start of the container */
-            margin-bottom: 16px; /* Optional: Reduce the margin for mobile view */
-        }
-    }
-
-    .editor {
-        height: 60vh;
-        display: flex;
-        flex-direction: column;
-
-        .quillWrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .ql-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: scroll;
-        }
-
-        .ql-editor {
-            padding: 20px 16px 30px;
-        }
-    }
-    .custom-button {
-        font-family: "Poppins", sans-serif;
-    }
-
-    .blog-actions {
-        margin-top: 80px;
-
-        button {
-            margin-right: 16px;
-        }
-    }
+<style>
+.modal-card {
+    margin-top: 100px;
 }
-</style> -->
+</style>
