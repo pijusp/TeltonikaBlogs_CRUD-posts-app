@@ -1,24 +1,32 @@
 <template>
-    <div class="post-view" v-if="currentPost">
-        <div class="container quillWrapper">
-            <h2>{{ this.currentPost.title }}</h2>
-            <h4>
-                {{ editedAtDate || createdAtDate }}
-            </h4>
-            <h4>Written by: {{ getAuthorName(this.currentPost.authorId) }}</h4>
-            <div
-                class="post-content ql-editor"
-                v-html="this.currentPost.body"
-            ></div>
-            <div class="buttons-wrapper">
-                <button class="custom-button" @click="goBack">Go Back</button>
-                <div class="buttons-group">
-                    <button class="custom-button" @click="handleDeletePost">
-                        Delete
+    <div>
+        <div v-if="!currentPost" class="no-posts">No article found 😔.</div>
+        <div class="post-view" v-if="currentPost">
+            <div class="container quillWrapper">
+                <h2>{{ currentPost.title }}</h2>
+                <h4>
+                    {{ editedAtDate || createdAtDate }}
+                </h4>
+                <h4>
+                    Written by:
+                    {{ getAuthorName(currentPost.authorId) }}
+                </h4>
+                <div
+                    class="post-content ql-editor"
+                    v-html="currentPost.body"
+                ></div>
+                <div class="buttons-wrapper">
+                    <button class="custom-button" @click="goBack">
+                        Go Back
                     </button>
-                    <button class="custom-button" @click="editBlog">
-                        Edit post
-                    </button>
+                    <div class="buttons-group">
+                        <button class="custom-button" @click="handleDeletePost">
+                            Delete
+                        </button>
+                        <button class="custom-button" @click="openEditModal">
+                            Edit post
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -33,25 +41,39 @@ export default {
         return {
             currentPost: null,
             isDeleteConfirmed: false,
+            isEditPostModalVisible: false,
+            postIdToEdit: null,
         };
     },
-    async mounted() {
-        try {
-            this.currentPost = await this.loadPosts();
-            const postId = this.$route.params.id;
-            this.currentPost = this.currentPost.find(
-                (post) => post.id === postId
-            );
-        } catch (error) {
-            console.error("Error loading posts:", error);
-        }
+    created() {
+        this.initCurrentPost();
     },
     methods: {
         ...mapActions("posts", ["loadPosts", "deletePost"]),
-        ...mapGetters("posts", ["getPosts", "getAuthorById"]),
-        getAuthorName(authorId) {
-            const author = this.getAuthorById(authorId);
-            return author ? author.name : "Unknown Author";
+        ...mapActions("editModal", ["openEditModal"]),
+        ...mapGetters("posts", ["getPosts", "getAuthorNameById", "getAuthors"]),
+        async initCurrentPost() {
+            try {
+                // Load the posts from the Vuex store
+                await this.loadPosts();
+
+                // Get the current post ID from the route params
+                const postId = this.$route.params.id;
+
+                // Find the current post in the loaded posts
+                this.currentPost = this.getPosts().find(
+                    (post) => post.id === postId
+                );
+
+                if (!this.currentPost) {
+                    console.error(
+                        "Post not found or null currentPost:",
+                        this.currentPost
+                    );
+                }
+            } catch (error) {
+                console.error("Error loading modal:", error);
+            }
         },
         goBack() {
             this.$router.push({ name: "Blogs" });
@@ -101,17 +123,25 @@ export default {
             // Redirecting after delete
             this.$router.push({ name: "Blogs" });
         },
-        editBlog() {
-            this.$router.push({
-                name: "EditPost",
-                params: { id: this.currentPost[0].id },
-            });
+        openEditModal() {
+            if (this.currentPost.id) {
+                console.log(this.currentPost.id);
+                this.postIdToEdit = this.currentPost.id;
+                this.isEditPostModalVisible = true;
+                console.log("EditBlog action triggered");
+                this.$store.dispatch(
+                    "editModal/openEditModal",
+                    this.postIdToEdit
+                );
+            } else {
+                console.error("Invalid post ID.");
+            }
         },
     },
     computed: {
-        editPost() {
-            return this.$store.state.editPost;
-        },
+        // editPost() {
+        //     return this.$store.state.editPost;
+        // },
         createdAtDate() {
             return (
                 "Created at: " +
@@ -136,6 +166,11 @@ export default {
             // Return null if the post has not been edited
             return null;
         },
+        getAuthorName(authorId) {
+            const authorName = this.getAuthorNameById(authorId);
+
+            return authorName;
+        },
     },
 };
 </script>
@@ -159,5 +194,12 @@ export default {
     .buttons-group button {
         margin-right: 10px;
     }
+}
+.no-posts {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    font-size: 24px;
 }
 </style>
