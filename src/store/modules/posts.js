@@ -6,7 +6,6 @@ export default {
     namespaced: true, // Namespaced module to avoid naming conflicts
     state: {
         editPost: null,
-        postLoaded: null,
         blogHTML: "Write your blog content here...",
         blogTitle: "",
         selectedAuthor: null,
@@ -66,9 +65,6 @@ export default {
             state.blogTitle = payload.title;
             state.blogHTML = payload.body;
         },
-        setPostLoaded(state, value) {
-            state.postLoaded = value;
-        },
     },
     actions: {
         async loadPosts({ commit, state }) {
@@ -96,7 +92,6 @@ export default {
                 // Update the Vuex state with the loaded posts and authors
                 commit("setPosts", posts);
                 commit("setAuthors", authors);
-                commit("setPostLoaded", true);
                 return posts;
             } catch (error) {
                 console.log(error);
