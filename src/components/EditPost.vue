@@ -27,9 +27,11 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import toastMixin from "../mixins/toastMixin";
 
 export default {
     name: "EditPost",
+    mixins: [toastMixin],
     data() {
         return {
             currentPost: null,
@@ -84,37 +86,15 @@ export default {
                 this.blogTitle = currentPost.title;
                 this.blogHTML = currentPost.body;
             } catch (error) {
-                this.$toast.warning(("Error updating the post!", error), {
-                    position: "top-right",
-                    timeout: 4952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
+                this.showToast("Please fill out the post!", "warning", {
+                    timeout: 5000,
                 });
             }
         },
         handleUpdateBlog() {
             if (this.blogTitle.length === 0 || this.blogHTML.length === 0) {
-                this.$toast.warning("Please fill out the post!", {
-                    position: "top-right",
-                    timeout: 2952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
+                this.showToast("Please fill out the post!", "warning", {
+                    timeout: 5000,
                 });
                 return;
             }
@@ -126,26 +106,15 @@ export default {
                     blogTitle: this.blogTitle,
                     blogHTML: this.blogHTML,
                 });
-                this.$toast.success("Blog post updated successfully!", {
-                    position: "top-right",
-                    timeout: 3000,
-                });
+                this.showToast("Blog post updated successfully!", "success");
             } catch (error) {
-                console.error("Error updating blog post:", error);
-                this.$toast.warning("Error updating the post!", {
-                    position: "top-right",
-                    timeout: 4952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
-                });
+                this.showToast(
+                    `Error updating blog post: ${error}`,
+                    "warning",
+                    {
+                        timeout: 5000,
+                    }
+                );
             }
 
             // Close the modal after saving the changes.

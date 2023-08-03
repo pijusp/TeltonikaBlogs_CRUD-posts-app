@@ -35,6 +35,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import toastMixin from "../mixins/toastMixin";
 export default {
     name: "ViewPost",
     data() {
@@ -45,6 +46,7 @@ export default {
             postIdToEdit: null,
         };
     },
+    mixins: [toastMixin],
     created() {
         this.initCurrentPost();
     },
@@ -66,13 +68,14 @@ export default {
                 );
 
                 if (!this.currentPost) {
-                    console.error(
-                        "Post not found or null currentPost:",
-                        this.currentPost
-                    );
+                    this.showToast("Post not found", "warning", {
+                        timeout: 5000,
+                    });
                 }
             } catch (error) {
-                console.error("Error loading modal:", error);
+                this.showToast(`Error loading modal: ${error}`, "warning", {
+                    timeout: 5000,
+                });
             }
         },
         goBack() {
@@ -89,27 +92,19 @@ export default {
                         // Set the flag to true to avoid further confirmations
                         this.isDeleteConfirmed = true;
                         await this.deletePostFromAPI(this.currentPost.id); // Call the deletePost action directly
-                        this.$toast.success("Blog post deleted successfully!", {
-                            position: "top-right",
-                            timeout: 3000,
-                        });
+                        this.showToast(
+                            "Blog post deleted successfully!",
+                            "success"
+                        );
                     } catch (error) {
                         // Handle any errors that occur during the request
-                        console.error("Error deleting blog post:", error);
-                        this.$toast.warning("Error deleting the post!", {
-                            position: "top-right",
-                            timeout: 4952,
-                            closeOnClick: true,
-                            pauseOnFocusLoss: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                            draggablePercent: 0.6,
-                            showCloseButtonOnHover: false,
-                            hideProgressBar: true,
-                            closeButton: "button",
-                            icon: true,
-                            rtl: false,
-                        });
+                        this.showToast(
+                            `Error deleting blog post: ${error}`,
+                            "warning",
+                            {
+                                timeout: 5000,
+                            }
+                        );
                     }
                 }
             }
@@ -125,23 +120,20 @@ export default {
         },
         openEditModal() {
             if (this.currentPost.id) {
-                console.log(this.currentPost.id);
                 this.postIdToEdit = this.currentPost.id;
                 this.isEditPostModalVisible = true;
-                console.log("EditBlog action triggered");
                 this.$store.dispatch(
                     "editModal/openEditModal",
                     this.postIdToEdit
                 );
             } else {
-                console.error("Invalid post ID.");
+                this.showToast("Invalid Post ID", "warning", {
+                    timeout: 5000,
+                });
             }
         },
     },
     computed: {
-        // editPost() {
-        //     return this.$store.state.editPost;
-        // },
         createdAtDate() {
             return (
                 "Created at: " +

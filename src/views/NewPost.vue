@@ -45,7 +45,7 @@
 <script>
 import Quill from "quill";
 import { mapMutations, mapActions, mapGetters } from "vuex";
-
+import toastMixin from "../mixins/toastMixin";
 window.Quill = Quill;
 export default {
     name: "NewPost",
@@ -57,6 +57,7 @@ export default {
             isNavigatingToPreview: false,
         };
     },
+    mixins: [toastMixin],
     methods: {
         // Map the mutations to update the Vuex store
         ...mapMutations("posts", [
@@ -67,28 +68,38 @@ export default {
         // Map the actions to interact with the Vuex store and API
         ...mapActions("posts", ["loadPosts", "createPost"]),
         handleCreatePost() {
-            console.log(this.selectedAuthor);
             // Check if an author is selected
             if (!this.selectedAuthor) {
-                this.$toast.warning("Please add an author!", {
-                    /* Toast options */
+                this.showToast("Please select an author!", "warning", {
+                    timeout: 5000,
                 });
                 return;
             }
 
             if (this.blogTitle.length == 0 || this.blogHTML.length == 0) {
-                this.$toast.warning("Please fill out the post!", {
-                    /* Toast options */
+                this.showToast("Please fill out the post!", "warning", {
+                    timeout: 5000,
                 });
                 return;
             }
 
             // Call the createPost action and pass the required data
-            this.createPost({
-                blogTitle: this.blogTitle,
-                blogHTML: this.blogHTML,
-                selectedAuthor: this.selectedAuthor,
-            });
+            try {
+                this.createPost({
+                    blogTitle: this.blogTitle,
+                    blogHTML: this.blogHTML,
+                    selectedAuthor: this.selectedAuthor,
+                });
+                this.showToast("Blog post uploaded successfully!", "success");
+            } catch (error) {
+                this.showToast(
+                    `Error uploading blog post: ${error}`,
+                    "warning",
+                    {
+                        timeout: 5000,
+                    }
+                );
+            }
         },
         fetchLocalData() {
             // Fetch data from the Vuex store and set the local data

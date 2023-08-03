@@ -135,10 +135,10 @@ export default {
                 );
 
                 // Display a success toast message
-                Vue.$toast.success("Blog post uploaded successfully!", {
-                    position: "top-right",
-                    timeout: 3000,
-                });
+                // Vue.$toast.success("Blog post uploaded successfully!", {
+                //     position: "top-right",
+                //     timeout: 3000,
+                // });
 
                 // Redirect to the "Blogs" page after successful post creation
                 router.push({ name: "Blogs" });
@@ -151,20 +151,20 @@ export default {
                 // Handle any errors that occur during the request
                 // Display a warning toast message
                 console.error(error);
-                Vue.$toast.warning("Error uploading the post!", {
-                    position: "top-right",
-                    timeout: 4952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
-                });
+                // Vue.$toast.warning("Error uploading the post!", {
+                //     position: "top-right",
+                //     timeout: 4952,
+                //     closeOnClick: true,
+                //     pauseOnFocusLoss: true,
+                //     pauseOnHover: true,
+                //     draggable: true,
+                //     draggablePercent: 0.6,
+                //     showCloseButtonOnHover: false,
+                //     hideProgressBar: true,
+                //     closeButton: "button",
+                //     icon: true,
+                //     rtl: false,
+                // });
             }
         },
     },

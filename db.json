@@ -43,7 +43,7 @@
     {
       "id": 2,
       "title": "Vivamus Euismod",
-      "body": "<p>Vivamus euismod tempus massa, non cursus velit maximus sed. Vita incerta, mors certissima .</p>",
+      "body": "<p>Vivamus euismod tempus massa, non cursus velit maximus sed. Vita incerta, mors certissima .!</p>",
       "authorId": 5,
       "created_at": "2023-05-31",
       "updated_at": "2023-08-03"
@@ -83,10 +83,10 @@
     {
       "id": 7,
       "title": "Fusce Rutrum",
-      "body": "Fusce rutrum neque eget leo tempus, sed bibendum arcu lobortis.",
+      "body": "<p>Fusce rutrum neque eget leo tempus, sed bibendum arcu lobortis. humu</p>",
       "authorId": 5,
       "created_at": "2023-05-31",
-      "updated_at": "2023-05-31"
+      "updated_at": "2023-08-03"
     },
     {
       "id": 9,
