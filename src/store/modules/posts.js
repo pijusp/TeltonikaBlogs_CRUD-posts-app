@@ -67,7 +67,7 @@ export default {
         },
     },
     actions: {
-        async loadPosts({ commit, state }) {
+        async loadPosts({ commit }) {
             try {
                 const response = await axios.get("http://localhost:3000/posts");
                 const posts = response.data;

@@ -54,7 +54,6 @@ export default {
                     try {
                         // Set the flag to true to avoid further confirmations
                         this.isDeleteConfirmed = true;
-                        console.log(this.post.id);
                         await this.deletePostFromAPI(this.post.id); // Call the deletePost action directly
                         this.$toast.success("Blog post deleted successfully!", {
                             position: "top-right",
@@ -92,7 +91,6 @@ export default {
             if (this.post.id) {
                 this.postIdToEdit = this.post.id;
                 this.isEditPostModalVisible = true;
-                console.log("EditBlog action triggered");
                 this.$store.dispatch(
                     "editModal/openEditModal",
                     this.postIdToEdit

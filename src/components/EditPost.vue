@@ -150,7 +150,6 @@ export default {
 
             // Close the modal after saving the changes.
             this.closeModal();
-            this.$router.push({ name: "Blogs" });
         },
 
         closeModal() {

@@ -3,7 +3,7 @@
         <main>
             <div class="container">
                 <div class="text">
-                    <h1>404</h1>
+                    <h2>404</h2>
                     <p>PAGE NOT FOUND</p>
                     <router-link to="/">Go to home</router-link>
                 </div>

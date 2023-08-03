@@ -55,8 +55,6 @@ export default {
     created() {
         this.loadPosts();
     },
-    mounted() {},
-    watch: {},
 };
 </script>
 

@@ -77,7 +77,6 @@ export default {
     methods: {
         ...mapActions("posts", ["loadPosts"]),
         onPageChange(page) {
-            console.log(page);
             this.currentPage = page;
         },
     },
