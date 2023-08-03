@@ -16,7 +16,7 @@
                         class="search-input"
                     />
                 </div>
-                <ul v-show="!mobile">
+                <ul class="desktop-menu">
                     <router-link class="link" :to="{ name: 'Blogs' }"
                         >Blogs</router-link
                     >
@@ -26,12 +26,7 @@
                 </ul>
             </div>
         </nav>
-        <img
-            :src="MenuIcon"
-            class="menu-icon"
-            @click="toggleMobileNav"
-            v-show="mobile"
-        />
+        <img :src="MenuIcon" class="menu-icon" @click="toggleMobileNav" />
         <transition name="mobile-nav">
             <ul class="mobile-nav" v-show="mobileNav">
                 <router-link class="link" :to="{ name: 'Blogs' }"
@@ -52,28 +47,13 @@ export default {
     components: {},
     data() {
         return {
-            mobile: null,
-            mobileNav: null,
-            windowWidth: null,
+            mobileNav: false,
             MenuIcon,
             searchQuery: "",
         };
     },
-    created() {
-        window.addEventListener("resize", this.checkScreen);
-        this.checkScreen();
-    },
+    created() {},
     methods: {
-        checkScreen() {
-            this.windowWidth = window.innerWidth;
-            if (this.windowWidth <= 768) {
-                this.mobile = true;
-                return;
-            }
-            this.mobile = false;
-            this.mobileNav = false;
-            return;
-        },
         toggleMobileNav() {
             this.mobileNav = !this.mobileNav;
         },
@@ -144,7 +124,7 @@ nav {
     }
     .search-bar {
         position: relative;
-        padding-right: 32px;
+        margin-right: 32px;
 
         .search-input {
             width: 200px;
@@ -199,6 +179,17 @@ nav {
     right: 25px;
     height: 25px;
     width: auto;
+    display: none; /* Hide the menu icon by default */
+}
+
+/* Show the menu icon only on screens with max-width 768px */
+@media only screen and (max-width: 768px) {
+    .menu-icon {
+        display: block;
+    }
+    .desktop-menu {
+        display: none;
+    }
 }
 
 .mobile-nav {
