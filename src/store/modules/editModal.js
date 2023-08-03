@@ -45,8 +45,6 @@ export default {
                     `http://localhost:3000/posts/${postId}`, // Use the specific post ID in the URL
                     updatedBlogPost
                 );
-
-                console.log("Blog post updated successfully:", response.data);
             } catch (error) {
                 // Handle any errors that occur during the request
                 console.error(error);

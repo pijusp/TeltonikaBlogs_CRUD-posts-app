@@ -48,7 +48,9 @@ export default {
                 const post = currentPost.find((post) => post.id === postId);
                 return post;
             } catch (error) {
-                console.error("Error loading posts:", error);
+                this.showToast(`Error loading posts: ${error}`, "warning", {
+                    timeout: 5000,
+                });
             }
         },
     },

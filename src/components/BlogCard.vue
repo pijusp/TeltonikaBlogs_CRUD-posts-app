@@ -28,8 +28,10 @@
 import Edit from "../assets/Icons/edit-regular.svg";
 import Delete from "../assets/Icons/trash-regular.svg";
 import { mapState, mapGetters, mapActions } from "vuex";
+import toastMixin from "../mixins/toastMixin";
 export default {
     name: "blogCard",
+    mixins: [toastMixin],
     props: ["post"],
     components: { Edit, Delete },
     data() {
@@ -55,27 +57,19 @@ export default {
                         // Set the flag to true to avoid further confirmations
                         this.isDeleteConfirmed = true;
                         await this.deletePostFromAPI(this.post.id); // Call the deletePost action directly
-                        this.$toast.success("Blog post deleted successfully!", {
-                            position: "top-right",
-                            timeout: 3000,
-                        });
+                        this.showToast(
+                            "Blog post deleted successfully!",
+                            "success"
+                        );
                     } catch (error) {
                         // Handle any errors that occur during the request
-                        console.error("Error deleting blog post:", error);
-                        this.$toast.warning("Error deleting the post!", {
-                            position: "top-right",
-                            timeout: 4952,
-                            closeOnClick: true,
-                            pauseOnFocusLoss: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                            draggablePercent: 0.6,
-                            showCloseButtonOnHover: false,
-                            hideProgressBar: true,
-                            closeButton: "button",
-                            icon: true,
-                            rtl: false,
-                        });
+                        this.showToast(
+                            `Error deleting blog post: ${error}`,
+                            "warning",
+                            {
+                                timeout: 5000,
+                            }
+                        );
                     }
                 }
             }
@@ -96,7 +90,9 @@ export default {
                     this.postIdToEdit
                 );
             } else {
-                console.error("Invalid post ID.");
+                this.showToast("Invalid post ID", "warning", {
+                    timeout: 5000,
+                });
             }
         },
         getAuthorName(authorId) {
