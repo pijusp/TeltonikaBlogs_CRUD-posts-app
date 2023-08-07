@@ -1,11 +1,11 @@
 <template>
     <div class="blog-card">
-        <div v-show="editPost" class="icons">
+        <div class="icons">
             <div @click="editBlog" class="icon">
                 <img :src="Edit" class="edit" />
             </div>
-            <div @click="deletePost" class="icon">
-                <img :src="Delete" class="delete" />
+            <div @click="handleDeletePost" class="icon">
+                <img :src="Delete" class="trashbin" />
             </div>
         </div>
         <div class="info">
@@ -16,7 +16,7 @@
             </h6>
             <router-link
                 class="link"
-                :to="{ name: 'ViewPost', params: { id: this.post.id } }"
+                :to="{ name: 'ViewPost', params: { id: post.id } }"
             >
                 View The Post ➡️
             </router-link>
@@ -27,57 +27,84 @@
 <script>
 import Edit from "../assets/Icons/edit-regular.svg";
 import Delete from "../assets/Icons/trash-regular.svg";
+import { mapState, mapGetters, mapActions } from "vuex";
+import toastMixin from "../mixins/toastMixin";
 export default {
     name: "blogCard",
+    mixins: [toastMixin],
     props: ["post"],
     components: { Edit, Delete },
     data() {
         return {
             Edit,
             Delete,
+            isDeleteConfirmed: false,
+            isEditPostModalVisible: false,
+            postIdToEdit: null,
         };
     },
     methods: {
-        deletePost() {
-            try {
-                this.$store.dispatch("deletePost", this.post.id);
-                this.$toast.success("Blog post deleted successfully!", {
-                    position: "top-right",
-                    timeout: 3000,
-                });
-            } catch (error) {
-                // Handle any errors that occur during the request
-                console.error("Error deleting blog post:", error);
-                this.$toast.warning("Error deleting the post!", {
-                    position: "top-right",
-                    timeout: 4952,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: true,
-                    rtl: false,
+        ...mapActions("posts", ["loadPosts", "deletePost"]),
+        ...mapActions("editModal", ["openEditModal"]),
+        async handleDeletePost() {
+            if (!this.isDeleteConfirmed) {
+                const confirmed = window.confirm(
+                    "Are you sure you want to delete this post?"
+                );
+
+                if (confirmed) {
+                    try {
+                        // Set the flag to true to avoid further confirmations
+                        this.isDeleteConfirmed = true;
+                        await this.deletePostFromAPI(this.post.id); // Call the deletePost action directly
+                        this.showToast(
+                            "Blog post deleted successfully!",
+                            "success"
+                        );
+                    } catch (error) {
+                        // Handle any errors that occur during the request
+                        this.showToast(
+                            `Error deleting blog post: ${error}`,
+                            "warning",
+                            {
+                                timeout: 5000,
+                            }
+                        );
+                    }
+                }
+            }
+        },
+        async deletePostFromAPI(postId) {
+            // Call the deletePost action from Vuex to delete the post
+            await this.deletePost(postId);
+
+            // Set the flag back to false to enable further confirmations
+            this.isDeleteConfirmed = false;
+        },
+        editBlog() {
+            if (this.post.id) {
+                this.postIdToEdit = this.post.id;
+                this.isEditPostModalVisible = true;
+                this.$store.dispatch(
+                    "editModal/openEditModal",
+                    this.postIdToEdit
+                );
+            } else {
+                this.showToast("Invalid post ID", "warning", {
+                    timeout: 5000,
                 });
             }
         },
-        editBlog() {
-            this.$router.push({
-                name: "EditPost",
-                params: { id: this.post.id },
-            });
-        },
         getAuthorName(authorId) {
-            const author = this.$store.getters.getAuthorById(authorId);
+            const author = this.getAuthorById(authorId);
             return author ? author.name : "Unknown Author";
         },
     },
     computed: {
+        ...mapState("posts", ["editPost"]),
+        ...mapGetters("posts", ["getAuthorById"]),
         editPost() {
-            return this.$store.state.editPost;
+            return this.editPost;
         },
         createdAtDate() {
             return (
@@ -126,7 +153,7 @@ export default {
         position: absolute;
         top: 10px;
         right: 10px;
-        z-index: 99;
+        z-index: 10;
         .icon {
             display: flex;
             justify-content: center;
@@ -147,7 +174,7 @@ export default {
             }
 
             .edit,
-            .delete {
+            .trashbin {
                 pointer-events: none;
                 height: 15px;
                 width: auto;

@@ -1,8 +1,19 @@
 <template>
-    <div class="app-wrapper" v-if="this.$store.state.postLoaded">
+    <div class="app-wrapper">
         <div class="app">
             <Navigation @search="handleSearch" />
             <router-view :searchQuery="searchQuery" />
+            <div
+                class="modal"
+                v-if="isEditPostModalVisible"
+                :class="{ 'modal-open': isEditPostModalVisible }"
+            >
+                <div class="modal-background"></div>
+                <EditPost
+                    :postId="postIdToEdit"
+                    :fetchCurrentPost="fetchCurrentPost"
+                />
+            </div>
             <Footer />
         </div>
     </div>
@@ -11,24 +22,41 @@
 <script>
 import Navigation from "./components/Navigation.vue";
 import Footer from "./components/Footer.vue";
+import EditPost from "./components/EditPost.vue";
+import { mapState, mapActions } from "vuex";
 export default {
     name: "app",
-    components: { Navigation, Footer },
+    components: { Navigation, Footer, EditPost },
+    computed: {
+        ...mapState("editModal", ["isEditPostModalVisible", "postIdToEdit"]),
+        ...mapState(["posts"]),
+    },
     data() {
         return {
             searchQuery: "",
         };
     },
     methods: {
+        ...mapActions("posts", ["loadPosts"]),
+        ...mapActions("editModal", ["openEditModal", "closeEditModal"]),
         handleSearch(searchQuery) {
             this.searchQuery = searchQuery;
         },
+        async fetchCurrentPost(postId) {
+            try {
+                const currentPost = await this.loadPosts();
+                const post = currentPost.find((post) => post.id === postId);
+                return post;
+            } catch (error) {
+                this.showToast(`Error loading posts: ${error}`, "warning", {
+                    timeout: 5000,
+                });
+            }
+        },
     },
     created() {
-        this.$store.dispatch("loadPosts");
+        this.loadPosts();
     },
-    mounted() {},
-    watch: {},
 };
 </script>
 
@@ -41,6 +69,9 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+.modal-open {
+    display: block;
 }
 
 .app {
