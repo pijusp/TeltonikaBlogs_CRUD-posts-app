@@ -1,9 +1,9 @@
 import axios from "axios";
-import Vue from "vue";
 import router from "../../router";
-
+import { dateMixin } from "../../mixins/dateMixin";
 export default {
     namespaced: true, // Namespaced module to avoid naming conflicts
+    mixins: [dateMixin],
     state: {
         editPost: null,
         blogHTML: "Write your blog content here...",
@@ -69,25 +69,14 @@ export default {
     actions: {
         async loadPosts({ commit }) {
             try {
-                const response = await axios.get("http://localhost:3000/posts");
+                const response = await axios.get(
+                    "http://localhost:3000/posts?_expand=author"
+                );
                 const posts = response.data;
 
-                // Extract unique author IDs from the posts
-                const authorIds = [
-                    ...new Set(posts.map((post) => post.authorId)),
-                ];
-
-                // Fetch author details for each author ID
-                const authorResponses = await Promise.all(
-                    authorIds.map((id) =>
-                        axios.get(`http://localhost:3000/authors/${id}`)
-                    )
-                );
-
-                // Extract author data from the responses
-                const authors = authorResponses.map(
-                    (response) => response.data
-                );
+                // Extract authors from the posts and remove the author object from each post
+                const authors = posts.map((post) => post.author);
+                // posts.forEach((post) => delete post.author);
 
                 // Update the Vuex state with the loaded posts and authors
                 commit("setPosts", posts);
@@ -111,20 +100,14 @@ export default {
             // Check if an author is selected
 
             // Get the current date and time
-            const currentDate = new Date();
-
-            // Format the date to yyyy-mm-dd format
-            const year = currentDate.getFullYear();
-            const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-            const day = String(currentDate.getDate()).padStart(2, "0");
-
+            const currentDate = dateMixin.methods.getCurrentDateFormatted();
             // Prepare the data to be sent to the server
             const updateBlogHTML = {
                 title: payload.blogTitle,
                 body: payload.blogHTML,
                 authorId: payload.selectedAuthor,
-                created_at: `${year}-${month}-${day}`,
-                updated_at: `${year}-${month}-${day}`,
+                created_at: currentDate,
+                updated_at: currentDate,
             };
 
             try {
