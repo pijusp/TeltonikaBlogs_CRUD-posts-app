@@ -1,7 +1,9 @@
 import axios from "axios";
+import { dateMixin } from "../../mixins/dateMixin";
 
 export default {
     namespaced: true,
+    mixins: [dateMixin],
     state: {
         isEditPostModalVisible: false,
         postIdToEdit: null,
@@ -26,18 +28,13 @@ export default {
 
         async updateBlog({ commit }, { postId, blogTitle, blogHTML }) {
             // Get the current date and time
-            const currentDate = new Date();
-
-            // Format the date to yyyy-mm-dd format
-            const year = currentDate.getFullYear();
-            const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-            const day = String(currentDate.getDate()).padStart(2, "0");
+            const currentDate = dateMixin.methods.getCurrentDateFormatted();
 
             // Prepare the data to be sent to the server
             const updatedBlogPost = {
                 title: blogTitle,
                 body: blogHTML,
-                updated_at: `${year}-${month}-${day}`,
+                updated_at: currentDate,
             };
 
             try {
