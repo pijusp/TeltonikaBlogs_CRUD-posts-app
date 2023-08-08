@@ -52,7 +52,6 @@ export default {
             searchQuery: "",
         };
     },
-    created() {},
     methods: {
         toggleMobileNav() {
             this.mobileNav = !this.mobileNav;
