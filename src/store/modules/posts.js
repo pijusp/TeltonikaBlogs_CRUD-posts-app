@@ -26,7 +26,7 @@ export default {
             const author = state.authors.find(
                 (author) => author.id === authorId
             );
-            return author ? JSON.parse(JSON.stringify(author)) : null;
+            return author ? author.name : null;
         },
         getAuthorNameById: (state) => (authorId) => {
             return state.authors.find((author) => author.id === authorId)?.name;
@@ -60,10 +60,6 @@ export default {
             if (index !== -1) {
                 state.posts.splice(index, 1);
             }
-        },
-        setPostState(state, payload) {
-            state.blogTitle = payload.title;
-            state.blogHTML = payload.body;
         },
     },
     actions: {

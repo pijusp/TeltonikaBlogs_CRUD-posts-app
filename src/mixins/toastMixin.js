@@ -1,4 +1,3 @@
-// toastMixin.js
 export default {
     methods: {
         showToast(message, type, options) {

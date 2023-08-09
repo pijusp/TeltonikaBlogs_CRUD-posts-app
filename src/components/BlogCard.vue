@@ -11,12 +11,14 @@
         <div class="info">
             <h4>{{ post.title }}</h4>
             <h6>Written by: {{ getAuthorName(post.authorId) }}</h6>
-            <h6>
+            <h6 class="edited-created">
                 {{ editedAtDate || createdAtDate }}
             </h6>
             <router-link
                 class="link"
+                :class="{ active: isLinkClicked }"
                 :to="{ name: 'ViewPost', params: { id: post.id } }"
+                @click="handleLinkClick"
             >
                 View The Post ➡️
             </router-link>
@@ -41,11 +43,15 @@ export default {
             isDeleteConfirmed: false,
             isEditPostModalVisible: false,
             postIdToEdit: null,
+            isLinkClicked: false,
         };
     },
     methods: {
         ...mapActions("posts", ["loadPosts", "deletePost"]),
         ...mapActions("editModal", ["openEditModal"]),
+        handleLinkClick() {
+            this.isLinkClicked = true;
+        },
         async handleDeletePost() {
             if (!this.isDeleteConfirmed) {
                 const confirmed = window.confirm(
