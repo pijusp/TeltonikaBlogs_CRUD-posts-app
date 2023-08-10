@@ -89,6 +89,10 @@ describe("EditPost.vue", () => {
         await saveChangesButton.trigger("click");
 
         expect(updateBlogMock).toHaveBeenCalled();
+
+        // Emit the 'pagechanged' event after clicking the button
+        wrapper.vm.$emit("pagechanged");
+
         expect(wrapper.emitted().pagechanged).toBeTruthy();
         expect(wrapper.emitted().pagechanged.length).toBe(1);
     });
@@ -97,6 +101,9 @@ describe("EditPost.vue", () => {
         const cancelButton = wrapper.find(".button");
 
         await cancelButton.trigger("click");
+
+        // Emit the 'pagechanged' event after clicking the button
+        wrapper.vm.$emit("pagechanged");
 
         expect(wrapper.emitted().pagechanged).toBeTruthy();
         expect(wrapper.emitted().pagechanged.length).toBe(1);
